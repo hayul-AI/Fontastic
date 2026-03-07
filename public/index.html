@@ -1,184 +1,109 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fontastic – Free Font Generator & Text Effects Creator</title>
-    <meta name="description" content="Create stunning 3D, neon, logo and social media text styles instantly. Download high-quality PNG or JPG text images for YouTube thumbnails, logos, and graphics.">
-    <link rel="canonical" href="https://fontastic.web.app/">
+    <title>Fontastic | AI 기반 텍스트 디자인 & 로고 제너레이터</title>
+    <meta name="description" content="Fontastic에서 나만의 특별한 텍스트 효과와 로고를 만들어보세요. 실시간 구글 폰트 적용과 다양한 텍스트 디자인 기능을 무료로 제공합니다.">
     
-    <!-- Open Graph tags for SEO -->
-    <meta property="og:title" content="Fontastic – Free Font Generator & Text Effects Creator">
-    <meta property="og:description" content="Create stunning 3D, neon, logo and social media text styles instantly.">
-    <meta property="og:type" content="website">
-
+    <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Bungee&family=Monoton&family=Pacifico&family=Press+Start+2P&family=Bebas+Neue&family=Creepster&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="style.css">
-    <script type="application/ld+json" id="schema-data"></script>
 </head>
 <body>
-    <header class="header">
+    <header class="navbar">
         <div class="container">
-            <a href="/" class="logo">Fontastic</a>
-            <nav class="nav">
-                <a href="/3d-text-generator">3D</a>
-                <a href="/neon-text-generator">Neon</a>
-                <a href="/metal-text-generator">Metal</a>
-                <a href="/gold-text-generator">Gold</a>
-                <a href="/glitch-text-generator">Glitch</a>
-                <a href="/cyberpunk-text-generator">Cyberpunk</a>
-                <a href="/fire-text-generator">Fire</a>
-                <a href="/retro-text-generator">Retro</a>
-                <a href="/graffiti-text-generator">Graffiti</a>
+            <h1 class="logo">Fontastic<span>.</span></h1>
+            <nav>
+                <ul>
+                    <li><a href="#generator">Generator</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                </ul>
             </nav>
         </div>
     </header>
 
-    <div class="ad-slot ad-top">
-        <div class="ad-placeholder">AdSense Banner Top (min 90px)</div>
+    <!-- Top Ad Slot (Zero CLS) -->
+    <div class="ad-slot top-banner">
+        <div class="ad-placeholder">Advertisement</div>
     </div>
 
-    <main class="container main-layout">
-        <aside class="controls">
-            <!-- Text Input -->
-            <div class="control-group">
-                <label for="text-input">Your Text</label>
-                <textarea id="text-input" rows="2">Fontastic</textarea>
-            </div>
-            
-            <div class="control-group">
-                <label for="font-select">Font Family</label>
-                <select id="font-select">
-                    <option value="Inter">Inter (Default)</option>
-                    <option value="Bungee">Bungee (3D)</option>
-                    <option value="Monoton">Monoton (Neon)</option>
-                    <option value="Pacifico">Pacifico (Script)</option>
-                    <option value="Press Start 2P">Retro 8-bit</option>
-                    <option value="Creepster">Pixel/Horror</option>
-                    <option value="Bebas Neue">Gaming</option>
-                </select>
-            </div>
-            
-            <!-- Typography -->
-            <div class="control-row">
+    <main id="generator" class="container main-content">
+        <section class="generator-section">
+            <div class="controls-panel card">
+                <h2 class="section-title">Text Settings</h2>
+                
                 <div class="control-group">
-                    <label for="font-size">Size</label>
-                    <input type="range" id="font-size" min="20" max="300" value="100">
+                    <label for="textInput">Your Text</label>
+                    <input type="text" id="textInput" placeholder="Enter text here..." value="Fontastic">
                 </div>
+
                 <div class="control-group">
-                    <label for="letter-spacing">Spacing</label>
-                    <input type="range" id="letter-spacing" min="-20" max="100" value="0">
+                    <label for="fontSize">Font Size (<span id="fontSizeValue">80</span>px)</label>
+                    <input type="range" id="fontSize" min="20" max="200" value="80">
                 </div>
-            </div>
-            
-            <div class="control-row">
+
                 <div class="control-group">
-                    <label for="line-height">Line Height</label>
-                    <input type="range" id="line-height" min="0.5" max="3" step="0.1" value="1.2">
+                    <label for="textColor">Text Color</label>
+                    <div class="color-picker-wrapper">
+                        <input type="color" id="textColor" value="#7c5cff">
+                        <span id="colorHex">#7c5cff</span>
+                    </div>
                 </div>
-                <div class="control-group">
-                    <label for="text-curve">Curve / Arc</label>
-                    <input type="range" id="text-curve" min="-100" max="100" value="0">
-                </div>
+
+                <button id="downloadBtn" class="btn btn-primary">Download PNG</button>
             </div>
 
-            <!-- Colors & Stroke -->
-            <div class="control-row">
-                <div class="control-group">
-                    <label for="text-color">Text Color</label>
-                    <input type="color" id="text-color" value="#ffffff">
-                </div>
-                <div class="control-group">
-                    <label for="accent-color">Accent / Shadow</label>
-                    <input type="color" id="accent-color" value="#ff00ff">
+            <div class="preview-panel card">
+                <h2 class="section-title">Live Preview</h2>
+                <div class="canvas-wrapper">
+                    <canvas id="textCanvas"></canvas>
                 </div>
             </div>
-            
-            <div class="control-row">
-                <div class="control-group">
-                    <label for="stroke-width">Stroke Width</label>
-                    <input type="range" id="stroke-width" min="0" max="30" value="0">
-                </div>
-            </div>
-
-            <!-- Effect & Texture -->
-            <div class="control-group">
-                <label for="texture-select">Texture Overlay</label>
-                <select id="texture-select">
-                    <option value="none">None</option>
-                    <option value="gold">Gold Shine</option>
-                    <option value="metal">Chrome Metal</option>
-                    <option value="fire">Fire Flame</option>
-                    <option value="galaxy">Deep Galaxy</option>
-                </select>
-            </div>
-            
-            <div class="control-group">
-                <label>Background</label>
-                <div class="bg-options">
-                    <button class="bg-btn active" data-bg="transparent">Transparent</button>
-                    <button class="bg-btn" data-bg="solid">Solid</button>
-                </div>
-                <input type="color" id="bg-color" value="#000000" style="display:none; margin-top: 10px; width: 100%;">
-            </div>
-
-            <!-- Export -->
-            <div class="control-group">
-                <label for="export-res">Export Resolution</label>
-                <select id="export-res">
-                    <option value="1">1x (Standard)</option>
-                    <option value="2">2x (Retina / High-Res)</option>
-                    <option value="4">4x (4K UHD)</option>
-                </select>
-            </div>
-            
-            <div class="download-actions">
-                <button id="download-png" class="btn-primary">Download PNG</button>
-                <button id="download-jpg" class="btn-secondary">Download JPG</button>
-            </div>
-        </aside>
-
-        <section class="workspace">
-            <div class="canvas-container" id="canvas-container">
-                <canvas id="text-canvas"></canvas>
-            </div>
-            
-            <div class="ad-slot ad-middle">
-                <div class="ad-placeholder">AdSense Banner Middle (min 250px)</div>
-            </div>
-
-            <!-- Dynamic SEO Content -->
-            <article id="seo-content" class="seo-article">
-                <!-- Injected via Router -->
-            </article>
-            
-            <!-- Static Image Indexing Area -->
-            <section id="image-examples" class="examples-grid">
-                <!-- Injected via Router -->
-            </section>
-            
-            <section id="faq-content" class="faq-section">
-                <!-- Injected via Router -->
-            </section>
         </section>
 
-        <!-- Right Sidebar for AdSense Desktop -->
-        <aside class="sidebar">
-            <div class="ad-slot ad-sidebar">
-                <div class="ad-placeholder">AdSense Sidebar (300x600)</div>
-            </div>
-        </aside>
+        <!-- Middle Ad Slot (Zero CLS) -->
+        <div class="ad-slot middle-banner">
+            <div class="ad-placeholder">Advertisement</div>
+        </div>
+
+        <article id="seo-content" class="seo-article">
+            <header>
+                <h2>무료 텍스트 디자인 제너레이터: 완벽한 타이포그래피의 시작</h2>
+            </header>
+            <p>Fontastic은 현대적인 디자인 감각을 가진 사용자를 위한 실시간 텍스트 효과 생성 도구입니다. 복잡한 그래픽 툴 없이도 클릭 몇 번만으로 웹사이트 제목, SNS 콘텐츠, 로고 등에 사용할 수 있는 멋진 타이포그래피를 만들 수 있습니다.</p>
+            
+            <h3>왜 Fontastic을 사용해야 하나요?</h3>
+            <ul>
+                <li><strong>실시간 미리보기:</strong> 폰트 크기, 색상, 효과의 변화를 즉석에서 확인하세요.</li>
+                <li><strong>고품질 다운로드:</strong> 생성한 디자인을 투명 배경의 PNG 파일로 고해상도 저장할 수 있습니다.</li>
+                <li><strong>간편한 조작:</strong> 직관적인 슬라이더와 피커를 통해 누구나 전문가 수준의 디자인이 가능합니다.</li>
+            </ul>
+
+            <section class="faq">
+                <h3>자주 묻는 질문 (FAQ)</h3>
+                <div class="faq-item">
+                    <h4>Q. 생성한 이미지를 상업적으로 이용할 수 있나요?</h4>
+                    <p>A. 네, Fontastic을 통해 생성된 모든 결과물은 개인 및 상업적 용도로 자유롭게 사용이 가능합니다.</p>
+                </div>
+                <div class="faq-item">
+                    <h4>Q. 어떤 폰트들을 지원하나요?</h4>
+                    <p>A. 현재 구글 폰트를 연동하여 전 세계적으로 인기 있는 다양한 서체들을 실시간으로 지원하고 있습니다.</p>
+                </div>
+            </section>
+        </article>
     </main>
 
-    <footer class="footer">
+    <footer class="main-footer">
         <div class="container">
-            <p>&copy; 2026 Fontastic. Designed for massive SEO indexing & AdSense RPM.</p>
+            <p>&copy; 2026 Fontastic. All rights reserved.</p>
         </div>
     </footer>
 
-    <script type="module" src="app.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
