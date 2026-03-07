@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fontastic – Free Font Generator & Text Effects Creator</title>
+    <meta name="description" content="Create stunning 3D, neon, logo and social media text styles instantly. Download high-quality PNG or JPG text images for YouTube thumbnails, logos, and graphics.">
+    <link rel="canonical" href="https://fontastic.web.app/">
+    
+    <!-- Open Graph tags for SEO -->
+    <meta property="og:title" content="Fontastic – Free Font Generator & Text Effects Creator">
+    <meta property="og:description" content="Create stunning 3D, neon, logo and social media text styles instantly.">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Bungee&family=Monoton&family=Pacifico&family=Press+Start+2P&family=Bebas+Neue&family=Creepster&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+    <script type="application/ld+json" id="schema-data"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="/" class="logo">Fontastic</a>
+            <nav class="nav">
+                <a href="/3d-text-generator">3D</a>
+                <a href="/neon-text-generator">Neon</a>
+                <a href="/metal-text-generator">Metal</a>
+                <a href="/gold-text-generator">Gold</a>
+                <a href="/glitch-text-generator">Glitch</a>
+                <a href="/cyberpunk-text-generator">Cyberpunk</a>
+                <a href="/fire-text-generator">Fire</a>
+                <a href="/retro-text-generator">Retro</a>
+                <a href="/graffiti-text-generator">Graffiti</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="ad-slot ad-top">
+        <div class="ad-placeholder">AdSense Banner Top (min 90px)</div>
+    </div>
+
+    <main class="container main-layout">
+        <aside class="controls">
+            <!-- Text Input -->
+            <div class="control-group">
+                <label for="text-input">Your Text</label>
+                <textarea id="text-input" rows="2">Fontastic</textarea>
+            </div>
+            
+            <div class="control-group">
+                <label for="font-select">Font Family</label>
+                <select id="font-select">
+                    <option value="Inter">Inter (Default)</option>
+                    <option value="Bungee">Bungee (3D)</option>
+                    <option value="Monoton">Monoton (Neon)</option>
+                    <option value="Pacifico">Pacifico (Script)</option>
+                    <option value="Press Start 2P">Retro 8-bit</option>
+                    <option value="Creepster">Pixel/Horror</option>
+                    <option value="Bebas Neue">Gaming</option>
+                </select>
+            </div>
+            
+            <!-- Typography -->
+            <div class="control-row">
+                <div class="control-group">
+                    <label for="font-size">Size</label>
+                    <input type="range" id="font-size" min="20" max="300" value="100">
+                </div>
+                <div class="control-group">
+                    <label for="letter-spacing">Spacing</label>
+                    <input type="range" id="letter-spacing" min="-20" max="100" value="0">
+                </div>
+            </div>
+            
+            <div class="control-row">
+                <div class="control-group">
+                    <label for="line-height">Line Height</label>
+                    <input type="range" id="line-height" min="0.5" max="3" step="0.1" value="1.2">
+                </div>
+                <div class="control-group">
+                    <label for="text-curve">Curve / Arc</label>
+                    <input type="range" id="text-curve" min="-100" max="100" value="0">
+                </div>
+            </div>
+
+            <!-- Colors & Stroke -->
+            <div class="control-row">
+                <div class="control-group">
+                    <label for="text-color">Text Color</label>
+                    <input type="color" id="text-color" value="#ffffff">
+                </div>
+                <div class="control-group">
+                    <label for="accent-color">Accent / Shadow</label>
+                    <input type="color" id="accent-color" value="#ff00ff">
+                </div>
+            </div>
+            
+            <div class="control-row">
+                <div class="control-group">
+                    <label for="stroke-width">Stroke Width</label>
+                    <input type="range" id="stroke-width" min="0" max="30" value="0">
+                </div>
+            </div>
+
+            <!-- Effect & Texture -->
+            <div class="control-group">
+                <label for="texture-select">Texture Overlay</label>
+                <select id="texture-select">
+                    <option value="none">None</option>
+                    <option value="gold">Gold Shine</option>
+                    <option value="metal">Chrome Metal</option>
+                    <option value="fire">Fire Flame</option>
+                    <option value="galaxy">Deep Galaxy</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label>Background</label>
+                <div class="bg-options">
+                    <button class="bg-btn active" data-bg="transparent">Transparent</button>
+                    <button class="bg-btn" data-bg="solid">Solid</button>
+                </div>
+                <input type="color" id="bg-color" value="#000000" style="display:none; margin-top: 10px; width: 100%;">
+            </div>
+
+            <!-- Export -->
+            <div class="control-group">
+                <label for="export-res">Export Resolution</label>
+                <select id="export-res">
+                    <option value="1">1x (Standard)</option>
+                    <option value="2">2x (Retina / High-Res)</option>
+                    <option value="4">4x (4K UHD)</option>
+                </select>
+            </div>
+            
+            <div class="download-actions">
+                <button id="download-png" class="btn-primary">Download PNG</button>
+                <button id="download-jpg" class="btn-secondary">Download JPG</button>
+            </div>
+        </aside>
+
+        <section class="workspace">
+            <div class="canvas-container" id="canvas-container">
+                <canvas id="text-canvas"></canvas>
+            </div>
+            
+            <div class="ad-slot ad-middle">
+                <div class="ad-placeholder">AdSense Banner Middle (min 250px)</div>
+            </div>
+
+            <!-- Dynamic SEO Content -->
+            <article id="seo-content" class="seo-article">
+                <!-- Injected via Router -->
+            </article>
+            
+            <!-- Static Image Indexing Area -->
+            <section id="image-examples" class="examples-grid">
+                <!-- Injected via Router -->
+            </section>
+            
+            <section id="faq-content" class="faq-section">
+                <!-- Injected via Router -->
+            </section>
+        </section>
+
+        <!-- Right Sidebar for AdSense Desktop -->
+        <aside class="sidebar">
+            <div class="ad-slot ad-sidebar">
+                <div class="ad-placeholder">AdSense Sidebar (300x600)</div>
+            </div>
+        </aside>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Fontastic. Designed for massive SEO indexing & AdSense RPM.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
