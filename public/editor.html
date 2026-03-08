@@ -5,16 +5,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fontastic Editor | Customize Your Text</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body class="editor-page">
     <header class="site-header">
         <a href="/" class="logo-wrapper">
-            <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 20h9" />
-                <path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z" />
+            <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9" stroke="#EA4335" />
+                <path d="M16.5 3.5a2.1 2.1 0 013 3L7 19" stroke="#4285F4" />
+                <path d="M7 19l-4 1 1-4" stroke="#FBBC05" />
+                <path d="M4 16l12.5-12.5" stroke="#4285F4" />
             </svg>
             <span class="site-logo">Fontastic</span>
         </a>
@@ -25,7 +27,7 @@
         <div id="current-font-label" style="display:none;" aria-hidden="true">Roboto</div>
         <div class="top-bar-content">
             <div class="top-bar-group" style="flex: 2;">
-                <input type="text" id="textInput" value="Fontastic" placeholder="Type your text...">
+                <textarea id="textInput" placeholder="Type your text..." rows="1" style="height: 40px; padding: 10px 12px; resize: none; overflow: hidden;">Fontastic</textarea>
             </div>
             <div class="top-bar-group"
                 style="flex: 1.5; display: flex; gap: 10px; margin-left: 20px; align-items: center;">
@@ -39,7 +41,7 @@
                     <option value="cyrillic">Cyrillic</option>
                 </select>
                 <input type="text" id="fontSearch" placeholder="Search fonts..." style="flex: 1;">
-                <!-- Custom font picker: renders each item in its own font family -->
+                <!-- Custom font picker -->
                 <div id="fontPickerWrap" style="flex: 2; position: relative;">
                     <div id="fontPickerTrigger" class="font-picker-trigger">
                         <span id="fontPickerLabel">Roboto</span>
@@ -51,7 +53,7 @@
                     <div id="fontPickerDropdown" class="font-picker-dropdown" style="display:none;">
                         <div id="fontPickerList" class="font-picker-list"></div>
                     </div>
-                    <!-- Hidden value carrier — editor.js reads this as the "fontSelect" element -->
+                    <!-- Hidden value carrier -->
                     <select id="fontSelect" style="display:none;" aria-hidden="true"></select>
                 </div>
             </div>
@@ -65,235 +67,303 @@
     </div>
 
     <div class="editor-container">
-        <aside class="sidebar left-panel">
+        <!-- LEFT PANEL: Text Tools -->
+        <aside class="editor-sidebar left-sidebar">
+            <h3>Text Tools</h3>
+            <div class="field" style="flex-direction: row; gap: 8px; margin-bottom: 15px;">
+                <button id="addTextBtn" class="premium-btn" style="margin-top: 0; background: #2cb67d; padding: 10px; font-size: 12px;">+ Add Text</button>
+                <button id="deleteTextBtn" class="premium-btn" style="margin-top: 0; background: #e53935; padding: 10px; font-size: 12px;">Delete</button>
+            </div>
 
-            <div class="control-group">
-                <h3>Text Controls</h3>
-                <div class="field">
+            <div class="field">
+                <label>Text Alignment</label>
+                <div class="alignment-group">
+                    <button class="align-btn" id="alignLeft" title="Left Align">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="17" y1="18" x2="3" y2="18"></line></svg>
+                    </button>
+                    <button class="align-btn active" id="alignCenter" title="Center Align">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="10" x2="6" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="18" y1="18" x2="6" y2="18"></line></svg>
+                    </button>
+                    <button class="align-btn" id="alignRight" title="Right Align">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="10" x2="7" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="7" y2="18"></line></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Position Controls -->
+            <div class="field" style="flex-direction: row; gap: 10px; margin-bottom: 15px;">
+                <div style="flex: 1;">
+                    <label style="font-size: 10px; display: block; margin-bottom: 4px; color: var(--text-dim);">X Pos</label>
+                    <input type="number" id="posXNum" min="0" max="960" step="1" value="480" class="numeric-input" style="width: 100%;">
+                </div>
+                <div style="flex: 1;">
+                    <label style="font-size: 10px; display: block; margin-bottom: 4px; color: var(--text-dim);">Y Pos</label>
+                    <input type="number" id="posYNum" min="0" max="540" step="1" value="270" class="numeric-input" style="width: 100%;">
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="field-header">
                     <label>Font Size</label>
-                    <input type="range" id="sizeRange" min="20" max="200" value="100">
+                    <input type="number" id="sizeNum" min="10" max="500" step="1" value="60" class="numeric-input">
                 </div>
-                <div class="field">
+                <input type="range" id="sizeRange" min="10" max="500" value="60">
+            </div>
+            <div class="field">
+                <div class="field-header">
                     <label>Letter Spacing</label>
-                    <input type="range" id="spacingRange" min="-10" max="50" value="0">
+                    <input type="number" id="spacingNum" min="-10" max="100" step="0.1" value="0" class="numeric-input">
                 </div>
-                <div class="field">
+                <input type="range" id="spacingRange" min="-10" max="50" value="0">
+            </div>
+            <div class="field">
+                <div class="field-header">
                     <label>Line Height</label>
-                    <input type="range" id="lineHeightRange" min="0.5" max="3" step="0.1" value="1.2">
+                    <input type="number" id="lineHeightNum" min="0.5" max="3" step="0.1" value="1.2" class="numeric-input">
                 </div>
-                <div class="field">
-                    <label>Font Weight</label>
-                    <select id="weightSelect" class="modern-select">
-                        <option value="400">Normal (400)</option>
-                        <option value="500">Medium (500)</option>
-                        <option value="600">Semi Bold (600)</option>
-                        <option value="700" selected>Bold (700)</option>
-                        <option value="900">Black (900)</option>
-                    </select>
-                </div>
+                <input type="range" id="lineHeightRange" min="0.5" max="3" step="0.1" value="1.2">
             </div>
-
-            <div class="control-group">
-                <h3>Fill Style</h3>
-                <div class="field">
-                    <select id="fillType" class="modern-select">
-                        <option value="solid">Solid Color</option>
-                        <option value="linear">Linear Gradient</option>
-                        <option value="radial">Radial Gradient</option>
-                        <option value="pattern">Pattern / Texture</option>
-                    </select>
-                </div>
-                <div class="field" id="color1Container">
-                    <label>Primary Color</label>
-                    <input type="color" id="textColor1" value="#6c4cff">
-                </div>
-                <div class="field" id="color2Container" style="display: none;">
-                    <label>Secondary Color</label>
-                    <input type="color" id="textColor2" value="#00d4ff">
-                </div>
-                <div class="field" id="patternContainer" style="display: none;">
-                    <label>Texture</label>
-                    <select id="patternSelect" class="modern-select">
-                        <option value="gold">Gold</option>
-                        <option value="chrome">Chrome</option>
-                        <option value="marble">Marble</option>
-                        <option value="carbon">Carbon Fiber</option>
-                        <option value="lava">Lava</option>
-                        <option value="ice">Ice</option>
-                        <option value="galaxy">Galaxy</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label>Opacity</label>
-                    <input type="range" id="opacityRange" min="0" max="1" step="0.05" value="1">
-                </div>
+            <div class="field">
+                <label>Font Weight</label>
+                <select id="weightSelect" class="modern-select">
+                    <option value="400">Normal (400)</option>
+                    <option value="500">Medium (500)</option>
+                    <option value="600">Semi Bold (600)</option>
+                    <option value="700" selected>Bold (700)</option>
+                    <option value="900">Black (900)</option>
+                </select>
             </div>
-
-            <div class="control-group">
-                <h3>Outline</h3>
-                <div class="field checkbox-wrapper">
-                    <input type="checkbox" id="outlineToggle">
-                    <label for="outlineToggle">Enable Outline</label>
-                </div>
-                <div class="outline-controls" style="display: none;">
-                    <div class="field">
-                        <select id="outlineType" class="modern-select">
-                            <option value="single">Single Outline</option>
-                            <option value="double">Double Outline</option>
-                            <option value="gradient">Gradient Outline</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label>Outline Color</label>
-                        <input type="color" id="outlineColor" value="#ffffff">
-                    </div>
-                    <div class="field" id="outlineColor2Container" style="display: none;">
-                        <label>Outline Color 2</label>
-                        <input type="color" id="outlineColor2" value="#000000">
-                    </div>
-                    <div class="field">
-                        <label>Outline Width</label>
-                        <input type="range" id="outlineWidth" min="1" max="20" value="2">
-                    </div>
-                </div>
+            <!-- Font Upload Placeholder as requested -->
+            <div class="field">
+                <label>Font Upload (Coming Soon)</label>
+                <button class="premium-btn" style="background: #333; cursor: not-allowed; opacity: 0.5;">Upload .ttf / .otf</button>
             </div>
-
-            <div class="control-group">
-                <h3>Shadow Effect</h3>
-                <div class="field checkbox-wrapper">
-                    <input type="checkbox" id="shadowToggle">
-                    <label for="shadowToggle">Enable Shadow</label>
-                </div>
-                <div class="shadow-controls" style="display: none;">
-                    <div class="field">
-                        <select id="shadowType" class="modern-select">
-                            <option value="soft">Soft Shadow</option>
-                            <option value="long">Long Shadow</option>
-                            <option value="deep">Deep Shadow</option>
-                            <option value="comic">Comic Shadow</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label>Shadow Color</label>
-                        <input type="color" id="shadowColor" value="#000000">
-                    </div>
-                    <div class="field">
-                        <label>Shadow Blur</label>
-                        <input type="range" id="shadowBlur" min="0" max="50" value="10">
-                    </div>
-                    <div class="field">
-                        <label>Offset X</label>
-                        <input type="range" id="shadowOffsetX" min="-50" max="50" value="5">
-                    </div>
-                    <div class="field">
-                        <label>Offset Y</label>
-                        <input type="range" id="shadowOffsetY" min="-50" max="50" value="5">
-                    </div>
-                </div>
-            </div>
-
-            <div class="control-group">
-                <h3>3D Effect</h3>
-                <div class="field checkbox-wrapper">
-                    <input type="checkbox" id="threeDToggle">
-                    <label for="threeDToggle">Enable 3D</label>
-                </div>
-                <div class="threed-controls" style="display: none;">
-                    <div class="field">
-                        <select id="threeDType" class="modern-select">
-                            <option value="extrude">Extrude</option>
-                            <option value="bevel">Bevel</option>
-                            <option value="emboss">Emboss</option>
-                            <option value="stacked">Stacked Text</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label>3D Color</label>
-                        <input type="color" id="threeDColor" value="#3a2599">
-                    </div>
-                    <div class="field">
-                        <label>Depth</label>
-                        <input type="range" id="threeDDepth" min="1" max="50" value="10">
-                    </div>
-                    <div class="field">
-                        <label>Direction (Angle)</label>
-                        <input type="range" id="threeDDirection" min="0" max="360" value="45">
-                    </div>
-                </div>
-            </div>
-
-            <div class="control-group">
-                <h3>Glow / Neon</h3>
-                <div class="field checkbox-wrapper">
-                    <input type="checkbox" id="neonToggle">
-                    <label for="neonToggle">Enable Glow</label>
-                </div>
-                <div class="neon-controls" style="display: none;">
-                    <div class="field">
-                        <select id="glowType" class="modern-select">
-                            <option value="soft">Soft Glow</option>
-                            <option value="neon">Neon Glow</option>
-                            <option value="outer">Outer Glow</option>
-                            <option value="aura">Aura Glow</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label>Glow Color</label>
-                        <input type="color" id="neonColor" value="#00d4ff">
-                    </div>
-                    <div class="field">
-                        <label>Intensity</label>
-                        <input type="range" id="neonIntensity" min="10" max="100" value="30">
-                    </div>
-                </div>
-            </div>
-
-            <div class="control-group">
-                <h3>Special Effects</h3>
-                <div class="field">
-                    <select id="macroSelect" class="modern-select">
-                        <option value="none">None (Custom)</option>
-                        <option value="fire">🔥 Fire Text</option>
-                        <option value="ice">❄️ Ice Text</option>
-                        <option value="chrome">⚙️ Chrome Metal</option>
-                        <option value="gold">✨ Gold Foil</option>
-                        <option value="neon">💡 Neon Sign</option>
-                        <option value="glitch">⚡ Glitch</option>
-                        <option value="cyberpunk">🌆 Cyberpunk</option>
-                        <option value="retrowave">🎵 Retro Wave</option>
-                        <option value="holographic">🌈 Holographic</option>
-                        <option value="liquid">💧 Liquid Metal</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="control-group">
-                <h3>Export Options</h3>
-                <div class="field">
-                    <label>Preview Background</label>
-                    <select id="bgSelect" class="modern-select">
-                        <option value="checkerboard">Checkerboard (Transparent Export)</option>
-                        <option value="white">White</option>
-                        <option value="black">Black</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label>Export Resolution</label>
-                    <select id="resSelect" class="modern-select">
-                        <option value="512">512 px</option>
-                        <option value="1024">1024 px</option>
-                        <option value="2048" selected>2048 px</option>
-                    </select>
-                    <small class="hint">Export is always transparent PNG.</small>
-                </div>
-            </div>
-
-            <button id="downloadPng" class="premium-btn">⬇ Download PNG</button>
         </aside>
 
-        <main class="canvas-area">
-            <canvas id="previewCanvas" width="900" height="300"></canvas>
+        <!-- CENTER CONTENT: Canvas & Bottom Panels -->
+        <main class="editor-main">
+            <!-- Canvas Area -->
+            <div class="canvas-area">
+                <div class="canvas-wrapper">
+                    <canvas id="fontCanvas"></canvas>
+                </div>
+            </div>
+
+            <!-- Background Options (KEEP EXACTLY AS THEY ARE) -->
+            <div class="field" style="flex-direction: row; gap: 10px; margin-bottom: 20px; justify-content: center;">
+                <button id="bgTransparent" class="premium-btn" style="width: auto; padding: 8px 16px; margin: 0; background: #333; border: 1px solid #555;">Transparent</button>
+                <button id="bgWhite" class="premium-btn" style="width: auto; padding: 8px 16px; margin: 0; background: #fff; color: #000; border: 1px solid #ccc;">White</button>
+                <button id="bgBlack" class="premium-btn" style="width: auto; padding: 8px 16px; margin: 0; background: #000; color: #fff; border: 1px solid #333;">Black</button>
+            </div>
+
+            <!-- Upload Background Area -->
+            <div class="upload-area" style="margin-bottom: 30px;">
+                <label for="bgUpload" class="upload-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="17 8 12 3 7 8" />
+                        <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                    Upload Background Image
+                </label>
+                <input type="file" id="bgUpload" accept="image/png, image/jpeg, image/webp" style="display: none;">
+            </div>
+
+            <!-- FIXED BOTTOM PANELS: Text Controls, Outline Controls, Special Effects -->
+            <div class="editor-controls-grid">
+                <!-- Group 1: Text Controls -->
+                <div class="control-group">
+                    <h3>Text Controls</h3>
+                    <div class="field">
+                        <label>Fill Style</label>
+                        <select id="fillType" class="modern-select">
+                            <option value="solid">Solid Color</option>
+                            <option value="linear">Linear Gradient</option>
+                            <option value="radial">Radial Gradient</option>
+                            <option value="pattern">Pattern / Texture</option>
+                        </select>
+                    </div>
+                    <div class="field" id="color1Container">
+                        <label>Primary Color</label>
+                        <input type="color" id="textColor1" value="#000000">
+                    </div>
+                    <div class="field" id="color2Container" style="display: none;">
+                        <label>Secondary Color</label>
+                        <input type="color" id="textColor2" value="#00d4ff">
+                    </div>
+                    <div class="field" id="patternContainer" style="display: none;">
+                        <label>Texture</label>
+                        <select id="patternSelect" class="modern-select">
+                            <option value="gold">Gold</option>
+                            <option value="chrome">Chrome</option>
+                            <option value="marble">Marble</option>
+                            <option value="carbon">Carbon Fiber</option>
+                            <option value="lava">Lava</option>
+                            <option value="ice">Ice</option>
+                            <option value="galaxy">Galaxy</option>
+                            <option value="stripes">Stripes</option>
+                            <option value="dots">Dots</option>
+                            <option value="grid">Grid</option>
+                            <option value="diagonal">Diagonal</option>
+                            <option value="cross">Cross</option>
+                            <option value="checker">Checker</option>
+                            <option value="noise">Noise</option>
+                            <option value="fabric">Fabric</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <div class="field-header">
+                            <label>Opacity</label>
+                            <input type="number" id="opacityNum" min="0" max="100" step="1" value="100" class="numeric-input">
+                        </div>
+                        <input type="range" id="opacityRange" min="0" max="1" step="0.05" value="1">
+                    </div>
+                </div>
+
+                <!-- Group 2: Outline Controls -->
+                <div class="control-group">
+                    <h3>Outline Controls</h3>
+                    <div class="field checkbox-wrapper">
+                        <input type="checkbox" id="outlineToggle">
+                        <label for="outlineToggle">Enable Outline</label>
+                    </div>
+                    <div class="outline-controls" style="display: none;">
+                        <div class="field">
+                            <label>Outline Color</label>
+                            <input type="color" id="outlineColor" value="#ffffff">
+                        </div>
+                        <div class="field">
+                            <label>Outline Width</label>
+                            <input type="range" id="outlineWidth" min="1" max="40" value="5">
+                        </div>
+                        <div class="field">
+                            <label>Outline Style</label>
+                            <select id="outlineType" class="modern-select">
+                                <option value="single">Single Outline</option>
+                                <option value="double">Double Outline</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Group 3: Special Effects -->
+                <div class="control-group">
+                    <h3>Special Effects</h3>
+                    <div class="field checkbox-wrapper">
+                        <input type="checkbox" id="shadowToggle">
+                        <label for="shadowToggle">Enable Shadow</label>
+                    </div>
+                    <div class="shadow-controls" style="display: none; margin-bottom: 10px;">
+                        <div class="field">
+                            <label>Shadow Color</label>
+                            <input type="color" id="shadowColor" value="#000000">
+                        </div>
+                        <div class="field">
+                            <div class="field-header">
+                                <label>Blur</label>
+                                <input type="number" id="shadowBlurNum" min="0" max="100" step="1" value="10" class="numeric-input">
+                            </div>
+                            <input type="range" id="shadowBlur" min="0" max="100" value="10">
+                        </div>
+                        <div class="field">
+                            <div class="field-header">
+                                <label>Offset X</label>
+                                <input type="number" id="shadowOXNum" min="-200" max="200" step="1" value="5" class="numeric-input">
+                            </div>
+                            <input type="range" id="shadowOffsetX" min="-200" max="200" value="5">
+                        </div>
+                        <div class="field">
+                            <div class="field-header">
+                                <label>Offset Y</label>
+                                <input type="number" id="shadowOYNum" min="-200" max="200" step="1" value="5" class="numeric-input">
+                            </div>
+                            <input type="range" id="shadowOffsetY" min="-200" max="200" value="5">
+                        </div>
+                        <div class="field">
+                            <div class="field-header">
+                                <label>Shadow Opacity</label>
+                                <input type="number" id="shadowOpacityNum" min="0" max="100" step="1" value="50" class="numeric-input">
+                            </div>
+                            <input type="range" id="shadowOpacity" min="0" max="1" step="0.05" value="0.5">
+                        </div>
+                    </div>
+
+                    <div class="field checkbox-wrapper">
+                        <input type="checkbox" id="threeDToggle">
+                        <label for="threeDToggle">Enable 3D</label>
+                    </div>
+                    <div class="field checkbox-wrapper">
+                        <input type="checkbox" id="neonToggle">
+                        <label for="neonToggle">Enable Glow</label>
+                    </div>
+                    <div class="neon-controls" style="display: none; margin-bottom: 10px;">
+                        <div class="field">
+                            <label>Glow Color</label>
+                            <input type="color" id="neonColor" value="#00d4ff">
+                        </div>
+                        <div class="field">
+                            <div class="field-header">
+                                <label>Glow Blur</label>
+                                <input type="number" id="neonBlurNum" min="0" max="100" step="1" value="30" class="numeric-input">
+                            </div>
+                            <input type="range" id="neonBlur" min="0" max="100" value="30">
+                        </div>
+                        <div class="field">
+                            <div class="field-header">
+                                <label>Glow Opacity</label>
+                                <input type="number" id="neonOpacityNum" min="0" max="100" step="1" value="100" class="numeric-input">
+                            </div>
+                            <input type="range" id="neonOpacity" min="0" max="1" step="0.05" value="1">
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Export Area (Bottom Panel) -->
+                <div class="control-group">
+                    <h3>Export</h3>
+                    <div class="field">
+                        <label>Resolution</label>
+                        <select id="resSelect" class="modern-select">
+                            <option value="512">512 px</option>
+                            <option value="1024">1024 px</option>
+                            <option value="1920" selected>1920x1080 (HD)</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-top: 15px;">
+                        <button id="downloadPng" class="premium-btn" style="flex: 1; margin-top: 0;">⬇ PNG</button>
+                        <button id="downloadSvg" class="premium-btn" style="flex: 1; margin-top: 0; background: #7c5cff;">⬇ SVG</button>
+                    </div>
+                </div>
+            </div>
         </main>
+
+        <!-- RIGHT PANEL: Style Tools -->
+        <aside class="editor-sidebar right-sidebar">
+            <h3>Style Tools</h3>
+            <div class="field">
+                <label>Text Color</label>
+                <input type="color" id="textColorPicker" value="#000000" style="width: 100%; height: 40px; cursor: pointer; border: 1px solid var(--border); border-radius: 6px; background: none; padding: 2px;">
+            </div>
+            <div class="field">
+                <div class="field-header">
+                    <label>Warp / Curve</label>
+                    <input type="number" id="warpNum" min="-100" max="100" step="1" value="0" class="numeric-input">
+                </div>
+                <input type="range" id="warpRange" min="-100" max="100" value="0">
+            </div>
+            <div class="field">
+                <div class="field-header">
+                    <label>Rotation</label>
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                        <input type="number" id="rotationNum" min="-360" max="360" step="1" value="0" class="numeric-input">
+                        <span style="font-size: 12px; color: var(--text-dim);">°</span>
+                    </div>
+                </div>
+                <input type="range" id="sideRotation" min="-360" max="360" value="0">
+            </div>
+        </aside>
     </div>
 
     <footer>

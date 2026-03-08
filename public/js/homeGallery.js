@@ -5,7 +5,7 @@
 
 import { FONT_LIBRARY } from './fontLibrary.js';
 
-let currentText = "Fontastic";
+let currentText = localStorage.getItem('fontastic_text') || "Fontastic";
 
 function updateAllPreviews() {
     const previews = document.querySelectorAll('.font-preview');
@@ -65,6 +65,10 @@ function generateGallery() {
         card.dataset.font = font;
 
         const gradient = gradients[Math.floor(Math.random() * gradients.length)];
+        
+        // Extract the first hex color from the gradient to pass to the editor
+        const firstColorMatch = gradient.match(/#[a-fA-F0-9]{6}/);
+        const primaryColor = firstColorMatch ? firstColorMatch[0] : "#ffffff";
 
         card.innerHTML = `
             <div class="font-preview" style="background:${gradient};-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
@@ -74,7 +78,7 @@ function generateGallery() {
         `;
 
         card.onclick = () => {
-            window.location.href = `/editor?font=${encodeURIComponent(font)}`;
+            window.location.href = `/editor?font=${encodeURIComponent(font)}&color=${encodeURIComponent(primaryColor)}`;
         };
 
         grid.appendChild(card);
@@ -84,9 +88,17 @@ function generateGallery() {
     const previewTextInput = document.getElementById('previewTextInput');
 
     if (previewTextInput) {
+        // Load initial text if exists
+        const savedText = localStorage.getItem('fontastic_text');
+        if (savedText) {
+            previewTextInput.value = savedText;
+            currentText = savedText;
+        }
+
         previewTextInput.addEventListener('input', (e) => {
             const query = e.target.value;
             currentText = query || "Fontastic";
+            localStorage.setItem('fontastic_text', currentText);
             updateAllPreviews();
         });
     }
