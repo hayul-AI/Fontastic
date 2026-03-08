@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fontastic Editor | Customize Your Text</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="editor-page">
+    <header class="site-header">
+        <a href="/" class="logo-wrapper">
+            <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9" />
+                <path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z" />
+            </svg>
+            <span class="site-logo">Fontastic</span>
+        </a>
+    </header>
+
+    <div class="editor-top-bar">
+        <!-- Hidden font label — required by editor.js for font tracking -->
+        <div id="current-font-label" style="display:none;" aria-hidden="true">Roboto</div>
+        <div class="top-bar-content">
+            <div class="top-bar-group" style="flex: 2;">
+                <input type="text" id="textInput" value="Fontastic" placeholder="Type your text...">
+            </div>
+            <div class="top-bar-group"
+                style="flex: 1.5; display: flex; gap: 10px; margin-left: 20px; align-items: center;">
+                <select id="langSelect" class="modern-select" style="flex: 0 0 140px;">
+                    <option value="latin" selected>English</option>
+                    <option value="korean">Korean</option>
+                    <option value="japanese">Japanese</option>
+                    <option value="chinese">Chinese</option>
+                    <option value="arabic">Arabic</option>
+                    <option value="hindi">Hindi</option>
+                    <option value="cyrillic">Cyrillic</option>
+                </select>
+                <input type="text" id="fontSearch" placeholder="Search fonts..." style="flex: 1;">
+                <!-- Custom font picker: renders each item in its own font family -->
+                <div id="fontPickerWrap" style="flex: 2; position: relative;">
+                    <div id="fontPickerTrigger" class="font-picker-trigger">
+                        <span id="fontPickerLabel">Roboto</span>
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="flex-shrink:0;opacity:0.6">
+                            <path d="M2 4l4 4 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                    <div id="fontPickerDropdown" class="font-picker-dropdown" style="display:none;">
+                        <div id="fontPickerList" class="font-picker-list"></div>
+                    </div>
+                    <!-- Hidden value carrier — editor.js reads this as the "fontSelect" element -->
+                    <select id="fontSelect" style="display:none;" aria-hidden="true"></select>
+                </div>
+            </div>
+            <div class="top-bar-actions" style="margin-left: 20px;">
+                <button id="randomFontBtn" class="premium-btn" style="width: auto; padding: 8px 16px; margin: 0;">Random
+                    Font</button>
+                <button id="resetBtn" class="premium-btn"
+                    style="width: auto; padding: 8px 16px; margin: 0; background: transparent; border: 1px solid #7c5cff; color: #fff;">Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="editor-container">
+        <aside class="sidebar left-panel">
+
+            <div class="control-group">
+                <h3>Text Controls</h3>
+                <div class="field">
+                    <label>Font Size</label>
+                    <input type="range" id="sizeRange" min="20" max="200" value="100">
+                </div>
+                <div class="field">
+                    <label>Letter Spacing</label>
+                    <input type="range" id="spacingRange" min="-10" max="50" value="0">
+                </div>
+                <div class="field">
+                    <label>Line Height</label>
+                    <input type="range" id="lineHeightRange" min="0.5" max="3" step="0.1" value="1.2">
+                </div>
+                <div class="field">
+                    <label>Font Weight</label>
+                    <select id="weightSelect" class="modern-select">
+                        <option value="400">Normal (400)</option>
+                        <option value="500">Medium (500)</option>
+                        <option value="600">Semi Bold (600)</option>
+                        <option value="700" selected>Bold (700)</option>
+                        <option value="900">Black (900)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Fill Style</h3>
+                <div class="field">
+                    <select id="fillType" class="modern-select">
+                        <option value="solid">Solid Color</option>
+                        <option value="linear">Linear Gradient</option>
+                        <option value="radial">Radial Gradient</option>
+                        <option value="pattern">Pattern / Texture</option>
+                    </select>
+                </div>
+                <div class="field" id="color1Container">
+                    <label>Primary Color</label>
+                    <input type="color" id="textColor1" value="#6c4cff">
+                </div>
+                <div class="field" id="color2Container" style="display: none;">
+                    <label>Secondary Color</label>
+                    <input type="color" id="textColor2" value="#00d4ff">
+                </div>
+                <div class="field" id="patternContainer" style="display: none;">
+                    <label>Texture</label>
+                    <select id="patternSelect" class="modern-select">
+                        <option value="gold">Gold</option>
+                        <option value="chrome">Chrome</option>
+                        <option value="marble">Marble</option>
+                        <option value="carbon">Carbon Fiber</option>
+                        <option value="lava">Lava</option>
+                        <option value="ice">Ice</option>
+                        <option value="galaxy">Galaxy</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Opacity</label>
+                    <input type="range" id="opacityRange" min="0" max="1" step="0.05" value="1">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Outline</h3>
+                <div class="field checkbox-wrapper">
+                    <input type="checkbox" id="outlineToggle">
+                    <label for="outlineToggle">Enable Outline</label>
+                </div>
+                <div class="outline-controls" style="display: none;">
+                    <div class="field">
+                        <select id="outlineType" class="modern-select">
+                            <option value="single">Single Outline</option>
+                            <option value="double">Double Outline</option>
+                            <option value="gradient">Gradient Outline</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>Outline Color</label>
+                        <input type="color" id="outlineColor" value="#ffffff">
+                    </div>
+                    <div class="field" id="outlineColor2Container" style="display: none;">
+                        <label>Outline Color 2</label>
+                        <input type="color" id="outlineColor2" value="#000000">
+                    </div>
+                    <div class="field">
+                        <label>Outline Width</label>
+                        <input type="range" id="outlineWidth" min="1" max="20" value="2">
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Shadow Effect</h3>
+                <div class="field checkbox-wrapper">
+                    <input type="checkbox" id="shadowToggle">
+                    <label for="shadowToggle">Enable Shadow</label>
+                </div>
+                <div class="shadow-controls" style="display: none;">
+                    <div class="field">
+                        <select id="shadowType" class="modern-select">
+                            <option value="soft">Soft Shadow</option>
+                            <option value="long">Long Shadow</option>
+                            <option value="deep">Deep Shadow</option>
+                            <option value="comic">Comic Shadow</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>Shadow Color</label>
+                        <input type="color" id="shadowColor" value="#000000">
+                    </div>
+                    <div class="field">
+                        <label>Shadow Blur</label>
+                        <input type="range" id="shadowBlur" min="0" max="50" value="10">
+                    </div>
+                    <div class="field">
+                        <label>Offset X</label>
+                        <input type="range" id="shadowOffsetX" min="-50" max="50" value="5">
+                    </div>
+                    <div class="field">
+                        <label>Offset Y</label>
+                        <input type="range" id="shadowOffsetY" min="-50" max="50" value="5">
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>3D Effect</h3>
+                <div class="field checkbox-wrapper">
+                    <input type="checkbox" id="threeDToggle">
+                    <label for="threeDToggle">Enable 3D</label>
+                </div>
+                <div class="threed-controls" style="display: none;">
+                    <div class="field">
+                        <select id="threeDType" class="modern-select">
+                            <option value="extrude">Extrude</option>
+                            <option value="bevel">Bevel</option>
+                            <option value="emboss">Emboss</option>
+                            <option value="stacked">Stacked Text</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>3D Color</label>
+                        <input type="color" id="threeDColor" value="#3a2599">
+                    </div>
+                    <div class="field">
+                        <label>Depth</label>
+                        <input type="range" id="threeDDepth" min="1" max="50" value="10">
+                    </div>
+                    <div class="field">
+                        <label>Direction (Angle)</label>
+                        <input type="range" id="threeDDirection" min="0" max="360" value="45">
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Glow / Neon</h3>
+                <div class="field checkbox-wrapper">
+                    <input type="checkbox" id="neonToggle">
+                    <label for="neonToggle">Enable Glow</label>
+                </div>
+                <div class="neon-controls" style="display: none;">
+                    <div class="field">
+                        <select id="glowType" class="modern-select">
+                            <option value="soft">Soft Glow</option>
+                            <option value="neon">Neon Glow</option>
+                            <option value="outer">Outer Glow</option>
+                            <option value="aura">Aura Glow</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>Glow Color</label>
+                        <input type="color" id="neonColor" value="#00d4ff">
+                    </div>
+                    <div class="field">
+                        <label>Intensity</label>
+                        <input type="range" id="neonIntensity" min="10" max="100" value="30">
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Special Effects</h3>
+                <div class="field">
+                    <select id="macroSelect" class="modern-select">
+                        <option value="none">None (Custom)</option>
+                        <option value="fire">🔥 Fire Text</option>
+                        <option value="ice">❄️ Ice Text</option>
+                        <option value="chrome">⚙️ Chrome Metal</option>
+                        <option value="gold">✨ Gold Foil</option>
+                        <option value="neon">💡 Neon Sign</option>
+                        <option value="glitch">⚡ Glitch</option>
+                        <option value="cyberpunk">🌆 Cyberpunk</option>
+                        <option value="retrowave">🎵 Retro Wave</option>
+                        <option value="holographic">🌈 Holographic</option>
+                        <option value="liquid">💧 Liquid Metal</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Export Options</h3>
+                <div class="field">
+                    <label>Preview Background</label>
+                    <select id="bgSelect" class="modern-select">
+                        <option value="checkerboard">Checkerboard (Transparent Export)</option>
+                        <option value="white">White</option>
+                        <option value="black">Black</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Export Resolution</label>
+                    <select id="resSelect" class="modern-select">
+                        <option value="512">512 px</option>
+                        <option value="1024">1024 px</option>
+                        <option value="2048" selected>2048 px</option>
+                    </select>
+                    <small class="hint">Export is always transparent PNG.</small>
+                </div>
+            </div>
+
+            <button id="downloadPng" class="premium-btn">⬇ Download PNG</button>
+        </aside>
+
+        <main class="canvas-area">
+            <canvas id="previewCanvas" width="900" height="300"></canvas>
+        </main>
+    </div>
+
+    <footer>
+        <nav class="footer-links">
+            <a href="/privacy">Privacy</a>
+            <a href="/terms">Terms</a>
+            <a href="/about">About</a>
+            <a href="/guides">Guides</a>
+            <a href="/contact">Contact</a>
+        </nav>
+        <p>&copy; 2026 Fontastic. All rights reserved.</p>
+    </footer>
+
+    <script type="module" src="js/editor.js"></script>
+</body>
+
+</html>

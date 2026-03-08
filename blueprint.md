@@ -18,10 +18,14 @@ Fontastic is a modern, production-ready, SEO-optimized, and AdSense-monetized st
 - **Typography:** Inter (Preloaded via Google Fonts)
 - **Style:** Minimalist, tool-focused, dark mode.
 
-## Implementation Plan
-1. **Scaffold Structure:** Create `public/` directory and basic files.
-2. **SEO & Routing:** Implement the `Router` in `app.js` to handle `/3d-text-generator`, etc.
-3. **Canvas Engine:** Build the core rendering logic in `canvas.js`.
-4. **UI Components:** Develop the responsive layout in `index.html` and `style.css`.
-5. **Metadata & Schema:** Logic for dynamic title, description, and JSON-LD updates.
-6. **Deployment Config:** `firebase.json` for performance headers and SPA rewrites.
+## Current Plan & Features
+
+### Core Features
+- Live text preview on Homepage Font Grid
+- Robust Editor UI (`editor.html` & `editor.js`)
+- **Dynamic Font Selector**: Change fonts instantly within the editor, with search, 22+ curated fonts, and URL routing (`/fonts/font-slug`).
+- Multi-layered Canvas rendering (Gradients, Outlines, Shadows, 3D Effects, Neon Glow).
+- Export to high-res transparent PNG.
+
+### In Progress / Planned
+- SVG & GIF Export improvements.
