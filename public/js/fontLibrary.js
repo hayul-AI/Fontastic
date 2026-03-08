@@ -460,11 +460,13 @@ export const FONT_LIBRARY = FONT_DATABASE.filter(f => f.lang === 'latin').map(f 
  */
 export function loadGoogleFont(fontName) {
     const encoded = fontName.replace(/\s+/g, '+');
-    if (!document.querySelector(`link[href*="family=${encoded}"]`)) {
+    // Enhanced: Unicode range and subsets are handled better by display=swap and not specifying subsets (let Google auto-select)
+    // However, we ensure the link is present.
+    if (!document.querySelector(`link[id="gf-${encoded}"]`)) {
         const link = document.createElement('link');
-        link.id = 'gf-' + fontName.replace(/\s+/g, '-');
+        link.id = 'gf-' + encoded;
         link.rel = 'stylesheet';
-        link.href = `https://fonts.googleapis.com/css2?family=${encoded}&display=swap`;
+        link.href = `https://fonts.googleapis.com/css2?family=${encoded}:wght@400;500;700;900&display=swap`;
         document.head.appendChild(link);
     }
 }

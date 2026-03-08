@@ -230,8 +230,11 @@ body {
 }
 
 .editor-container {
-    display: flex;
+    display: grid;
+    grid-template-columns: 260px 1fr 260px;
     height: calc(100vh - 146px);
+    overflow: hidden;
+    background: var(--bg);
 }
 
 .sidebar {
@@ -318,7 +321,8 @@ body {
         linear-gradient(-45deg, transparent 75%, #222 75%);
     background-size: 20px 20px;
     background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-    background-color: #111; /* Darker base for checkerboard in dark mode */
+    background-color: #111;
+    /* Darker base for checkerboard in dark mode */
 }
 
 
@@ -378,6 +382,7 @@ body {
         height: auto;
         overflow: visible;
     }
+
     .editor-sidebar {
         width: 100%;
         border: none;
@@ -611,6 +616,26 @@ input[type="color"]::-webkit-color-swatch {
 
 .premium-btn:active {
     transform: scale(0.98);
+}
+
+/* Add/Delete Button Specifics (v10) */
+#addTextBtn,
+#deleteTextBtn {
+    background: #000 !important;
+    border: 1px solid var(--accent) !important;
+    color: #fff !important;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    margin-top: 0 !important;
+    height: 40px;
+}
+
+#addTextBtn:hover,
+#deleteTextBtn:hover {
+    background: #121218 !important;
+    opacity: 1;
+    box-shadow: 0 0 12px rgba(124, 92, 255, 0.3);
 }
 
 /* Info Pages (Privacy, Terms, About, Guides) */
@@ -1006,8 +1031,9 @@ footer {
 }
 
 .align-btn.active {
-    background: #7c5cff;
-    color: #fff;
+    background: var(--accent) !important;
+    color: #fff !important;
+    box-shadow: 0 0 10px rgba(124, 92, 255, 0.4);
 }
 
 .align-btn svg {

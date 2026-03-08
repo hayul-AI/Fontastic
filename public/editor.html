@@ -5,14 +5,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fontastic Editor | Customize Your Text</title>
+    <meta name="description"
+        content="Customize your text with different fonts, effects, and patterns in the Fontastic editor.">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="stylesheet" href="style.css">
+
+    <!-- Dynamic SEO Script -->
+    <script>
+        (function () {
+            const params = new URLSearchParams(window.location.search);
+            const font = params.get('font');
+            if (font) {
+                const title = font + " - Fontastic Custom Design";
+                const desc = "Customize your text with the " + font + " font in the Fontastic editor. Add neon, 3D, and pattern effects.";
+                document.title = title;
+                const metaDesc = document.querySelector('meta[name="description"]');
+                if (metaDesc) metaDesc.setAttribute('content', desc);
+            }
+        })();
+    </script>
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Fontastic Editor",
+      "url": "https://fontastic.web.app/editor",
+      "applicationCategory": "DesignApplication",
+      "description": "An advanced font editor tool for creating custom text logos and designs."
+    }
+    </script>
 </head>
 
 <body class="editor-page">
     <header class="site-header">
         <a href="/" class="logo-wrapper">
-            <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 20h9" stroke="#EA4335" />
                 <path d="M16.5 3.5a2.1 2.1 0 013 3L7 19" stroke="#4285F4" />
                 <path d="M7 19l-4 1 1-4" stroke="#FBBC05" />
@@ -27,7 +57,8 @@
         <div id="current-font-label" style="display:none;" aria-hidden="true">Roboto</div>
         <div class="top-bar-content">
             <div class="top-bar-group" style="flex: 2;">
-                <textarea id="textInput" placeholder="Type your text..." rows="1" style="height: 40px; padding: 10px 12px; resize: none; overflow: hidden;">Fontastic</textarea>
+                <textarea id="textInput" placeholder="Type your text..." rows="1"
+                    style="height: 40px; padding: 10px 12px; resize: none; overflow: hidden;">Fontastic</textarea>
             </div>
             <div class="top-bar-group"
                 style="flex: 1.5; display: flex; gap: 10px; margin-left: 20px; align-items: center;">
@@ -71,21 +102,39 @@
         <aside class="editor-sidebar left-sidebar">
             <h3>Text Tools</h3>
             <div class="field" style="flex-direction: row; gap: 8px; margin-bottom: 15px;">
-                <button id="addTextBtn" class="premium-btn" style="margin-top: 0; background: #2cb67d; padding: 10px; font-size: 12px;">+ Add Text</button>
-                <button id="deleteTextBtn" class="premium-btn" style="margin-top: 0; background: #e53935; padding: 10px; font-size: 12px;">Delete</button>
+                <button id="addTextBtn" class="premium-btn">+ Add Text</button>
+                <button id="deleteTextBtn" class="premium-btn">Delete</button>
             </div>
 
             <div class="field">
                 <label>Text Alignment</label>
                 <div class="alignment-group">
                     <button class="align-btn" id="alignLeft" title="Left Align">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="17" y1="18" x2="3" y2="18"></line></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="17" y1="10" x2="3" y2="10"></line>
+                            <line x1="21" y1="6" x2="3" y2="6"></line>
+                            <line x1="21" y1="14" x2="3" y2="14"></line>
+                            <line x1="17" y1="18" x2="3" y2="18"></line>
+                        </svg>
                     </button>
-                    <button class="align-btn active" id="alignCenter" title="Center Align">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="10" x2="6" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="18" y1="18" x2="6" y2="18"></line></svg>
+                    <button class="align-btn" id="alignCenter" title="Center Align">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="10" x2="6" y2="10"></line>
+                            <line x1="21" y1="6" x2="3" y2="6"></line>
+                            <line x1="21" y1="14" x2="3" y2="14"></line>
+                            <line x1="18" y1="18" x2="6" y2="18"></line>
+                        </svg>
                     </button>
                     <button class="align-btn" id="alignRight" title="Right Align">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="10" x2="7" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="7" y2="18"></line></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="21" y1="10" x2="7" y2="10"></line>
+                            <line x1="21" y1="6" x2="3" y2="6"></line>
+                            <line x1="21" y1="14" x2="3" y2="14"></line>
+                            <line x1="21" y1="18" x2="7" y2="18"></line>
+                        </svg>
                     </button>
                 </div>
             </div>
@@ -93,12 +142,16 @@
             <!-- Position Controls -->
             <div class="field" style="flex-direction: row; gap: 10px; margin-bottom: 15px;">
                 <div style="flex: 1;">
-                    <label style="font-size: 10px; display: block; margin-bottom: 4px; color: var(--text-dim);">X Pos</label>
-                    <input type="number" id="posXNum" min="0" max="960" step="1" value="480" class="numeric-input" style="width: 100%;">
+                    <label style="font-size: 10px; display: block; margin-bottom: 4px; color: var(--text-dim);">X
+                        Pos</label>
+                    <input type="number" id="posXNum" min="0" max="960" step="1" value="480" class="numeric-input"
+                        style="width: 100%;">
                 </div>
                 <div style="flex: 1;">
-                    <label style="font-size: 10px; display: block; margin-bottom: 4px; color: var(--text-dim);">Y Pos</label>
-                    <input type="number" id="posYNum" min="0" max="540" step="1" value="270" class="numeric-input" style="width: 100%;">
+                    <label style="font-size: 10px; display: block; margin-bottom: 4px; color: var(--text-dim);">Y
+                        Pos</label>
+                    <input type="number" id="posYNum" min="0" max="540" step="1" value="270" class="numeric-input"
+                        style="width: 100%;">
                 </div>
             </div>
 
@@ -119,7 +172,8 @@
             <div class="field">
                 <div class="field-header">
                     <label>Line Height</label>
-                    <input type="number" id="lineHeightNum" min="0.5" max="3" step="0.1" value="1.2" class="numeric-input">
+                    <input type="number" id="lineHeightNum" min="0.5" max="3" step="0.1" value="1.2"
+                        class="numeric-input">
                 </div>
                 <input type="range" id="lineHeightRange" min="0.5" max="3" step="0.1" value="1.2">
             </div>
@@ -133,11 +187,6 @@
                     <option value="900">Black (900)</option>
                 </select>
             </div>
-            <!-- Font Upload Placeholder as requested -->
-            <div class="field">
-                <label>Font Upload (Coming Soon)</label>
-                <button class="premium-btn" style="background: #333; cursor: not-allowed; opacity: 0.5;">Upload .ttf / .otf</button>
-            </div>
         </aside>
 
         <!-- CENTER CONTENT: Canvas & Bottom Panels -->
@@ -150,10 +199,19 @@
             </div>
 
             <!-- Background Options (KEEP EXACTLY AS THEY ARE) -->
-            <div class="field" style="flex-direction: row; gap: 10px; margin-bottom: 20px; justify-content: center;">
-                <button id="bgTransparent" class="premium-btn" style="width: auto; padding: 8px 16px; margin: 0; background: #333; border: 1px solid #555;">Transparent</button>
-                <button id="bgWhite" class="premium-btn" style="width: auto; padding: 8px 16px; margin: 0; background: #fff; color: #000; border: 1px solid #ccc;">White</button>
-                <button id="bgBlack" class="premium-btn" style="width: auto; padding: 8px 16px; margin: 0; background: #000; color: #fff; border: 1px solid #333;">Black</button>
+            <div class="field"
+                style="position: relative; flex-direction: row; gap: 10px; margin-bottom: 20px; justify-content: center;">
+                <button id="bgTransparent" class="premium-btn"
+                    style="width: auto; padding: 8px 16px; margin: 0; background: #333; border: 1px solid #555;">Transparent</button>
+                <button id="bgWhite" class="premium-btn"
+                    style="width: auto; padding: 8px 16px; margin: 0; background: #fff; color: #000; border: 1px solid #ccc;">White</button>
+                <button id="bgBlack" class="premium-btn"
+                    style="width: auto; padding: 8px 16px; margin: 0; background: #000; color: #fff; border: 1px solid #333;">Black</button>
+                <button id="bgCustom" class="premium-btn"
+                    style="width: auto; padding: 8px 16px; margin: 0; background: linear-gradient(90deg, #7c5cff, #00d4ff); border: none;">Color</button>
+                <input type="color" id="bgColorPicker"
+                    style="position: absolute; width: 0; height: 0; opacity: 0; bottom: 0; right: 20%; pointer-events: none;"
+                    value="#ffffff">
             </div>
 
             <!-- Upload Background Area -->
@@ -195,27 +253,24 @@
                     <div class="field" id="patternContainer" style="display: none;">
                         <label>Texture</label>
                         <select id="patternSelect" class="modern-select">
-                            <option value="gold">Gold</option>
-                            <option value="chrome">Chrome</option>
-                            <option value="marble">Marble</option>
+                            <option value="none">None</option>
+                            <option value="gold">Premium Gold</option>
+                            <option value="metal">Brushed Metal</option>
+                            <option value="marble">White Marble</option>
                             <option value="carbon">Carbon Fiber</option>
-                            <option value="lava">Lava</option>
-                            <option value="ice">Ice</option>
-                            <option value="galaxy">Galaxy</option>
-                            <option value="stripes">Stripes</option>
-                            <option value="dots">Dots</option>
-                            <option value="grid">Grid</option>
-                            <option value="diagonal">Diagonal</option>
-                            <option value="cross">Cross</option>
-                            <option value="checker">Checker</option>
-                            <option value="noise">Noise</option>
-                            <option value="fabric">Fabric</option>
+                            <option value="water">Ocean Water</option>
+                            <option value="wood">Dark Wood</option>
+                            <option value="glitter">Silver Glitter</option>
+                            <option value="lava">Volcanic Lava</option>
+                            <option value="ice">Frozen Ice</option>
+                            <option value="galaxy">Deep Galaxy</option>
                         </select>
                     </div>
                     <div class="field">
                         <div class="field-header">
                             <label>Opacity</label>
-                            <input type="number" id="opacityNum" min="0" max="100" step="1" value="100" class="numeric-input">
+                            <input type="number" id="opacityNum" min="0" max="100" step="1" value="100"
+                                class="numeric-input">
                         </div>
                         <input type="range" id="opacityRange" min="0" max="1" step="0.05" value="1">
                     </div>
@@ -230,12 +285,16 @@
                     </div>
                     <div class="outline-controls" style="display: none;">
                         <div class="field">
-                            <label>Outline Color</label>
-                            <input type="color" id="outlineColor" value="#ffffff">
+                            <label>Outline Color 1</label>
+                            <input type="color" id="outlineColor" value="#000000">
+                        </div>
+                        <div id="outlineColor2Container" class="field" style="display: none;">
+                            <label>Outline Color 2</label>
+                            <input type="color" id="outlineColor2" value="#000000">
                         </div>
                         <div class="field">
                             <label>Outline Width</label>
-                            <input type="range" id="outlineWidth" min="1" max="40" value="5">
+                            <input type="range" id="outlineWidth" min="0" max="20" step="0.5" value="2">
                         </div>
                         <div class="field">
                             <label>Outline Style</label>
@@ -262,28 +321,32 @@
                         <div class="field">
                             <div class="field-header">
                                 <label>Blur</label>
-                                <input type="number" id="shadowBlurNum" min="0" max="100" step="1" value="10" class="numeric-input">
+                                <input type="number" id="shadowBlurNum" min="0" max="100" step="1" value="10"
+                                    class="numeric-input">
                             </div>
                             <input type="range" id="shadowBlur" min="0" max="100" value="10">
                         </div>
                         <div class="field">
                             <div class="field-header">
                                 <label>Offset X</label>
-                                <input type="number" id="shadowOXNum" min="-200" max="200" step="1" value="5" class="numeric-input">
+                                <input type="number" id="shadowOXNum" min="-200" max="200" step="1" value="5"
+                                    class="numeric-input">
                             </div>
                             <input type="range" id="shadowOffsetX" min="-200" max="200" value="5">
                         </div>
                         <div class="field">
                             <div class="field-header">
                                 <label>Offset Y</label>
-                                <input type="number" id="shadowOYNum" min="-200" max="200" step="1" value="5" class="numeric-input">
+                                <input type="number" id="shadowOYNum" min="-200" max="200" step="1" value="5"
+                                    class="numeric-input">
                             </div>
                             <input type="range" id="shadowOffsetY" min="-200" max="200" value="5">
                         </div>
                         <div class="field">
                             <div class="field-header">
                                 <label>Shadow Opacity</label>
-                                <input type="number" id="shadowOpacityNum" min="0" max="100" step="1" value="50" class="numeric-input">
+                                <input type="number" id="shadowOpacityNum" min="0" max="100" step="1" value="50"
+                                    class="numeric-input">
                             </div>
                             <input type="range" id="shadowOpacity" min="0" max="1" step="0.05" value="0.5">
                         </div>
@@ -292,6 +355,20 @@
                     <div class="field checkbox-wrapper">
                         <input type="checkbox" id="threeDToggle">
                         <label for="threeDToggle">Enable 3D</label>
+                    </div>
+                    <div class="three-d-controls" style="display: none; margin-bottom: 10px;">
+                        <div class="field">
+                            <div class="field-header">
+                                <label>3D Depth</label>
+                                <input type="number" id="threeDDepthNum" min="1" max="20" step="1" value="5"
+                                    class="numeric-input">
+                            </div>
+                            <input type="range" id="threeDDepth" min="1" max="20" value="5">
+                        </div>
+                    </div>
+                    <div class="field checkbox-wrapper">
+                        <input type="checkbox" id="neonEffectToggle">
+                        <label for="neonEffectToggle">Neon Effect</label>
                     </div>
                     <div class="field checkbox-wrapper">
                         <input type="checkbox" id="neonToggle">
@@ -305,14 +382,16 @@
                         <div class="field">
                             <div class="field-header">
                                 <label>Glow Blur</label>
-                                <input type="number" id="neonBlurNum" min="0" max="100" step="1" value="30" class="numeric-input">
+                                <input type="number" id="neonBlurNum" min="0" max="100" step="1" value="30"
+                                    class="numeric-input">
                             </div>
                             <input type="range" id="neonBlur" min="0" max="100" value="30">
                         </div>
                         <div class="field">
                             <div class="field-header">
                                 <label>Glow Opacity</label>
-                                <input type="number" id="neonOpacityNum" min="0" max="100" step="1" value="100" class="numeric-input">
+                                <input type="number" id="neonOpacityNum" min="0" max="100" step="1" value="100"
+                                    class="numeric-input">
                             </div>
                             <input type="range" id="neonOpacity" min="0" max="1" step="0.05" value="1">
                         </div>
@@ -331,9 +410,17 @@
                             <option value="1920" selected>1920x1080 (HD)</option>
                         </select>
                     </div>
-                    <div style="display: flex; gap: 8px; margin-top: 15px;">
-                        <button id="downloadPng" class="premium-btn" style="flex: 1; margin-top: 0;">⬇ PNG</button>
-                        <button id="downloadSvg" class="premium-btn" style="flex: 1; margin-top: 0; background: #7c5cff;">⬇ SVG</button>
+                    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 15px;">
+                        <div style="display: flex; gap: 8px;">
+                            <button id="downloadPng" class="premium-btn" style="flex: 1; margin-top: 0;">⬇ PNG</button>
+                            <button id="downloadJpg" class="premium-btn"
+                                style="flex: 1; margin-top: 0; background: #444;">⬇ JPG</button>
+                        </div>
+                        <p style="font-size: 10px; color: var(--text-dim); text-align: center; margin: 0;">
+                            * JPG does not support transparent backgrounds
+                        </p>
+                        <button id="downloadSvg" class="premium-btn"
+                            style="width: 100%; margin-top: 4px; background: #7c5cff;">⬇ SVG</button>
                     </div>
                 </div>
             </div>
@@ -342,10 +429,6 @@
         <!-- RIGHT PANEL: Style Tools -->
         <aside class="editor-sidebar right-sidebar">
             <h3>Style Tools</h3>
-            <div class="field">
-                <label>Text Color</label>
-                <input type="color" id="textColorPicker" value="#000000" style="width: 100%; height: 40px; cursor: pointer; border: 1px solid var(--border); border-radius: 6px; background: none; padding: 2px;">
-            </div>
             <div class="field">
                 <div class="field-header">
                     <label>Warp / Curve</label>
@@ -357,7 +440,8 @@
                 <div class="field-header">
                     <label>Rotation</label>
                     <div style="display: flex; align-items: center; gap: 4px;">
-                        <input type="number" id="rotationNum" min="-360" max="360" step="1" value="0" class="numeric-input">
+                        <input type="number" id="rotationNum" min="-360" max="360" step="1" value="0"
+                            class="numeric-input">
                         <span style="font-size: 12px; color: var(--text-dim);">°</span>
                     </div>
                 </div>

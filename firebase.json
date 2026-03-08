@@ -34,6 +34,10 @@
         "destination": "/editor.html"
       },
       {
+        "source": "/ad/**",
+        "destination": "/index.html"
+      },
+      {
         "source": "/fonts/**",
         "destination": "/editor.html"
       },

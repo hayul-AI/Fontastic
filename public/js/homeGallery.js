@@ -60,12 +60,13 @@ function generateGallery() {
     ];
 
     FONT_LIBRARY.forEach((font) => {
-        const card = document.createElement('div');
+        const card = document.createElement('article');
         card.className = 'font-card';
         card.dataset.font = font;
+        card.setAttribute('aria-label', `${font} font preview and editor`);
 
         const gradient = gradients[Math.floor(Math.random() * gradients.length)];
-        
+
         // Extract the first hex color from the gradient to pass to the editor
         const firstColorMatch = gradient.match(/#[a-fA-F0-9]{6}/);
         const primaryColor = firstColorMatch ? firstColorMatch[0] : "#ffffff";
