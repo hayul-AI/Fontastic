@@ -460,15 +460,41 @@ export const FONT_LIBRARY = FONT_DATABASE.filter(f => f.lang === 'latin').map(f 
  */
 export function loadGoogleFont(fontName) {
     const encoded = fontName.replace(/\s+/g, '+');
-    // Enhanced: Unicode range and subsets are handled better by display=swap and not specifying subsets (let Google auto-select)
-    // However, we ensure the link is present.
-    if (!document.querySelector(`link[id="gf-${encoded}"]`)) {
+    const linkId = 'gf-' + encoded;
+    const existing = document.getElementById(linkId);
+
+    return new Promise((resolve) => {
+        const finalize = () => resolve();
+        if (existing) {
+            if (existing.dataset.loaded === 'true') return finalize();
+            const handler = () => {
+                existing.removeEventListener('load', handler);
+                existing.removeEventListener('error', handler);
+                finalize();
+            };
+            existing.addEventListener('load', handler);
+            existing.addEventListener('error', handler);
+            setTimeout(finalize, 1500); // Fail-safe
+            return;
+        }
+
         const link = document.createElement('link');
-        link.id = 'gf-' + encoded;
+        link.id = linkId;
         link.rel = 'stylesheet';
-        link.href = `https://fonts.googleapis.com/css2?family=${encoded}:wght@400;500;700;900&display=swap`;
+        // Use display=block to prevent swap-flicker and ensure the browser prioritizes the web font
+        // NOT specifying weights allows Google to return all available weights for the family
+        link.href = `https://fonts.googleapis.com/css2?family=${encoded}&display=block`;
+        link.onload = () => {
+            link.dataset.loaded = 'true';
+            finalize();
+        };
+        link.onerror = () => {
+            link.dataset.loaded = 'error';
+            finalize();
+        };
         document.head.appendChild(link);
-    }
+        setTimeout(finalize, 2500); // Hard safety fallback
+    });
 }
 
 /**

@@ -15,7 +15,9 @@ const editorState = {
     bgY: 270,
     bgScale: 1,
     bgRotation: 0,
-    fontsLoaded: false
+    fontsLoaded: false,
+    fontLoading: false,
+    initializationLock: true // v7 Double-Lock: Blocks all rendering until first verified font
 };
 
 const interaction = {
@@ -51,11 +53,14 @@ const fontObserver = new IntersectionObserver((entries) => {
 /**
  * Initialization
  */
-document.addEventListener("DOMContentLoaded", () => {
-    initializeEditor();
+document.addEventListener("DOMContentLoaded", async () => {
+    // Stage 0: Block all rendering immediately
+    editorState.fontLoading = true;
+    editorState.initializationLock = true;
+    await initializeEditor();
 });
 
-function initializeEditor() {
+async function initializeEditor() {
     editorState.canvas = document.getElementById("fontCanvas");
     if (!editorState.canvas) return;
 
@@ -63,14 +68,15 @@ function initializeEditor() {
     editorState.canvas.width = 960;
     editorState.canvas.height = 540;
 
-    loadInitialState();
+    // Load state -> Bind UI
+    await loadInitialState();
     bindUIEvents();
     populateFontPicker('latin');
-    syncUI();
-    renderCanvas();
+
+    // The first applyFont within loadInitialState will eventually clear initializationLock
 }
 
-function loadInitialState() {
+async function loadInitialState() {
     const params = new URLSearchParams(window.location.search);
     const initialFont = params.get("font") || localStorage.getItem("fontastic_font") || "Roboto";
     const initialColor = params.get("color") || "#ffffff";
@@ -80,7 +86,7 @@ function loadInitialState() {
     editorState.texts.push(text);
     editorState.selectedText = text;
 
-    applyFont(initialFont);
+    await applyFont(initialFont);
     syncUI();
 }
 
@@ -119,7 +125,8 @@ function createTextObject(content, x, y, font, size, color) {
         threeDDepth: 5,
         warp: 0,
         spacing: 0,
-        neonEffectEnabled: false
+        neonEffectEnabled: false,
+        glitchEnabled: false
     };
 }
 
@@ -141,6 +148,7 @@ function drawTransparentBackground() {
 function drawBackgroundMode() {
     const ctx = editorState.ctx;
     const canvas = editorState.canvas;
+    if (editorState.backgroundMode === "none") return;
     if (editorState.backgroundMode === "white") {
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -182,7 +190,7 @@ function drawText(text) {
     const weight = text.weight || '400';
     const fontSize = text.size || 60;
     const font = text.font || 'Roboto';
-    ctx.font = `${weight} ${fontSize}px '${font}'`;
+    ctx.font = `${weight} ${fontSize}px "${font}"`;
     ctx.textBaseline = "middle";
 
     ctx.translate(text.x, text.y);
@@ -303,6 +311,18 @@ function renderChar(ctx, char, x, y, text, fill) {
         }
     }
 
+    if (text.glitchEnabled) {
+        ctx.save();
+        ctx.shadowColor = "transparent";
+        ctx.shadowBlur = 0;
+        // Cyberpunk Glitch: Offset Cyan and Red layers
+        ctx.fillStyle = "rgba(0, 255, 255, 0.7)";
+        ctx.fillText(char, x - 2, y);
+        ctx.fillStyle = "rgba(255, 0, 0, 0.7)";
+        ctx.fillText(char, x + 2, y);
+        ctx.restore();
+    }
+
     ctx.fillStyle = fill;
     ctx.textAlign = "center";
 
@@ -346,7 +366,7 @@ function drawHandles(text) {
     ctx.translate(text.x, text.y);
     ctx.rotate(text.rotation * Math.PI / 180);
 
-    ctx.font = `${text.weight || '400'} ${text.size}px '${text.font}'`;
+    ctx.font = `${text.weight || '400'} ${text.size}px "${text.font}"`;
     const lines = text.content.split('\n');
     const lineHeight = text.lineHeight || 1.2;
     const spacing = (text.spacing || 0) * (text.size / 100);
@@ -396,7 +416,8 @@ function drawHandles(text) {
 function renderCanvas() {
     const ctx = editorState.ctx;
     const canvas = editorState.canvas;
-    if (!ctx || !canvas) return;
+    // v7 Gate: fontLoading OR initializationLock blocks the render
+    if (!ctx || !canvas || editorState.fontLoading || editorState.initializationLock) return;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -426,7 +447,7 @@ function bindUIEvents() {
         if (editorState.selectedText) {
             const t = editorState.selectedText;
             const ctx = editorState.ctx;
-            ctx.font = `${t.weight || '400'} ${t.size}px '${t.font}'`;
+            ctx.font = `${t.weight || '400'} ${t.size}px "${t.font}"`;
             const metrics = ctx.measureText(t.content);
             const w = metrics.width;
             const h = t.size;
@@ -538,7 +559,7 @@ function bindUIEvents() {
             const ly = dx * Math.sin(angle) + dy * Math.cos(angle);
 
             const ctx = editorState.ctx;
-            ctx.font = `${t.weight || '400'} ${t.size}px '${t.font}'`;
+            ctx.font = `${t.weight || '400'} ${t.size}px "${t.font}"`;
             const metrics = ctx.measureText(t.content);
             const w = metrics.width;
             const h = t.size;
@@ -587,13 +608,23 @@ function bindUIEvents() {
     });
 
     // FIX 2 — Canvas Background Buttons
-    document.getElementById('bgTransparent')?.addEventListener('click', () => setBackgroundMode('transparent'));
-    document.getElementById('bgWhite')?.addEventListener('click', () => setBackgroundMode('white'));
-    document.getElementById('bgBlack')?.addEventListener('click', () => setBackgroundMode('black'));
+    document.getElementById('bgTransparent')?.addEventListener('click', () => {
+        editorState.backgroundImage = null;
+        setBackgroundMode('transparent');
+    });
+    document.getElementById('bgWhite')?.addEventListener('click', () => {
+        editorState.backgroundImage = null;
+        setBackgroundMode('white');
+    });
+    document.getElementById('bgBlack')?.addEventListener('click', () => {
+        editorState.backgroundImage = null;
+        setBackgroundMode('black');
+    });
     document.getElementById('bgCustom')?.addEventListener('click', () => {
         document.getElementById('bgColorPicker').click();
     });
     document.getElementById('bgColorPicker')?.addEventListener('input', (e) => {
+        editorState.backgroundImage = null;
         editorState.customBgColor = e.target.value;
         setBackgroundMode('custom');
     });
@@ -645,7 +676,13 @@ function bindUIEvents() {
     document.getElementById('shadowColor')?.addEventListener('input', (e) => { if (editorState.selectedText) { editorState.selectedText.shadowColor = e.target.value; renderCanvas(); } });
     document.getElementById('shadowBlur')?.addEventListener('input', (e) => { if (editorState.selectedText) { editorState.selectedText.shadowBlur = parseInt(e.target.value); renderCanvas(); } });
 
-    document.getElementById('threeDToggle')?.addEventListener('change', (e) => { if (editorState.selectedText) { editorState.selectedText.enable3D = e.target.checked; renderCanvas(); } });
+    document.getElementById('threeDToggle')?.addEventListener('change', (e) => {
+        if (editorState.selectedText) {
+            editorState.selectedText.enable3D = e.target.checked;
+            syncUI();
+            renderCanvas();
+        }
+    });
 
     document.getElementById('neonEffectToggle')?.addEventListener('change', (e) => {
         if (editorState.selectedText) {
@@ -659,6 +696,13 @@ function bindUIEvents() {
                 document.getElementById('neonColor')?.click();
             }
             syncUI();
+            renderCanvas();
+        }
+    });
+
+    document.getElementById('glitchToggle')?.addEventListener('change', (e) => {
+        if (editorState.selectedText) {
+            editorState.selectedText.glitchEnabled = e.target.checked;
             renderCanvas();
         }
     });
@@ -748,13 +792,84 @@ function bindUIEvents() {
     document.getElementById('downloadSvg')?.addEventListener('click', exportSvg);
 }
 
-function applyFont(fontName) {
+/**
+ * Ultimate Font Loading Trigger (DOM-based)
+ * Forces the browser to recognize and download the font in a document context.
+ */
+function triggerDomFontLoad(fontName) {
+    let loader = document.getElementById('font-trigger-element');
+    if (!loader) {
+        loader = document.createElement('div');
+        loader.id = 'font-trigger-element';
+        // v7: Technically in render tree but clipped to invisibility. More robust than visibility/opacity alone.
+        loader.style.cssText = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;';
+        document.body.appendChild(loader);
+    }
+    loader.textContent = `V7-${fontName}-${Math.random().toString(36).substring(7)}`;
+    loader.style.fontFamily = `"${fontName}", monospace`; // Monospace fallback for width trigger
+}
+
+async function applyFont(fontName) {
     if (!editorState.selectedText) return;
     editorState.selectedText.font = fontName;
-    loadGoogleFont(fontName);
+
+    editorState.fontLoading = true;
+    triggerDomFontLoad(fontName);
+
     const label = document.getElementById('fontPickerLabel');
-    if (label) { label.textContent = fontName; label.style.fontFamily = `"${fontName}", sans-serif`; }
-    document.fonts.load(`${editorState.selectedText.size}px '${fontName}'`).then(() => renderCanvas());
+    if (label) {
+        label.textContent = fontName;
+        label.style.fontFamily = `"${fontName}", sans-serif`;
+    }
+
+    const weight = editorState.selectedText.weight || '700';
+    const testSize = 100;
+    const testBaseline = "monospace";
+    const testString = "MWli10lI!@#";
+
+    try {
+        await loadGoogleFont(fontName);
+        await document.fonts.ready;
+
+        let attempts = 0;
+        let isConfirmed = false;
+
+        // Sentinel Canvas: Offscreen canvas specifically for Zero-Tolerance width delta check
+        const sentinel = document.createElement('canvas');
+        const sctx = sentinel.getContext('2d');
+
+        while (attempts < 60) { // 3.0s total budget for extreme reliability
+            triggerDomFontLoad(fontName);
+
+            sctx.font = `${weight} ${testSize}px ${testBaseline}`;
+            const baselineWidth = sctx.measureText(testString).width;
+
+            sctx.font = `${weight} ${testSize}px "${fontName}", ${testBaseline}`;
+            const targetWidth = sctx.measureText(testString).width;
+
+            // Zero-Tolerance check: the second the width changes from monospace, we know the webfont is active.
+            // Also check document.fonts.check as a parallel signal.
+            if (Math.abs(baselineWidth - targetWidth) > 0.1 || document.fonts.check(`${weight} 60px "${fontName}"`)) {
+                isConfirmed = true;
+                break;
+            }
+
+            await new Promise(r => setTimeout(r, 50));
+            attempts++;
+        }
+    } catch (e) {
+        console.error("V7 Sentinel System encountered an error:", e);
+    }
+
+    editorState.fontLoading = false;
+    editorState.initializationLock = false; // Release the Double-Lock (safe after sentinel check)
+    renderCanvas();
+
+    // v7 Decaying Pulse: 50, 150, 400, 1000, 2500, 5000ms
+    const timeline = [50, 150, 400, 1000, 2500, 5000];
+    timeline.forEach(ms => {
+        setTimeout(() => { if (!editorState.fontLoading) renderCanvas(); }, ms);
+    });
 }
 
 function populateFontPicker(lang, query = "") {
@@ -817,11 +932,13 @@ function uploadBackground(event) {
         img.onload = () => {
             editorState.backgroundImage = img;
             editorState.bgScale = Math.max(editorState.canvas.width / img.width, editorState.canvas.height / img.height);
+            editorState.backgroundMode = 'none';
             renderCanvas();
         };
         img.src = e.target.result;
     };
     reader.readAsDataURL(file);
+    event.target.value = ''; // Reset to allow re-upload of same file
 }
 
 function addText() {
@@ -854,7 +971,7 @@ function loadPattern(id) {
             resolve(pattern);
         };
         img.onerror = () => resolve(null);
-        img.src = `/patterns/${id}.png`;
+        img.src = `/patterns/${id}.png?v=${Date.now()}`;
     });
 }
 
@@ -918,6 +1035,7 @@ function syncUI() {
     setCheck('threeDToggle', t.enable3D);
     setCheck('neonToggle', t.glowEnabled);
     setCheck('neonEffectToggle', t.neonEffectEnabled);
+    setCheck('glitchToggle', t.glitchEnabled);
     setVal('neonColor', t.glowColor);
     setVal('neonBlur', t.glowStrength);
     setVal('neonOpacity', t.glowOpacity || 1);
