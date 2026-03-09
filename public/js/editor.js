@@ -71,6 +71,7 @@ async function initializeEditor() {
     // Load state -> Bind UI
     await loadInitialState();
     bindUIEvents();
+    initAccordions(); // Logic for Sidebar Collapsibles
     populateFontPicker('latin');
 
     // The first applyFont within loadInitialState will eventually clear initializationLock
@@ -447,28 +448,31 @@ function bindUIEvents() {
         if (editorState.selectedText) {
             const t = editorState.selectedText;
             const ctx = editorState.ctx;
-            ctx.font = `${t.weight || '400'} ${t.size}px "${t.font}"`;
-            const metrics = ctx.measureText(t.content);
-            const w = metrics.width;
-            const h = t.size;
+            const bounds = getTextBounds(t, ctx);
+            const w = bounds.w;
+            const h = bounds.h;
             const pad = 10;
 
-            const dx = mouseX - t.x;
-            const dy = mouseY - t.y;
-            const angle = -t.rotation * Math.PI / 180;
-            const lx = dx * Math.cos(angle) - dy * Math.sin(angle);
-            const ly = dx * Math.sin(angle) + dy * Math.cos(angle);
+            const relPos = getRelativePointerPosition(mouseX, mouseY, t);
+            const lx = relPos.x;
+            const ly = relPos.y;
 
+            // Rotation handle is at the bottom (-h/2 - pad - 35), but remember Y axis is inverted in our drawing 
+            // In drawHandles: ctx.arc(xOffset + w / 2, -h / 2 - pad - 35
+            // xOffset is -w/2, so xOffset + w/2 = 0 (Center)
             if (Math.sqrt(lx ** 2 + (ly + h / 2 + pad + 35) ** 2) < 15) {
                 interaction.rotating = true;
                 interaction.startRotation = t.rotation;
                 return;
             }
+            // Resize handle is at top-right or bottom-right? 
+            // In drawHandles: corner = [xOffset + w + pad, h / 2 + pad]; which is [w/2+pad, h/2+pad]
             if (Math.abs(lx - (w / 2 + pad)) < 15 && Math.abs(ly - (h / 2 + pad)) < 15) {
                 interaction.resizing = true;
                 interaction.startSize = t.size;
                 return;
             }
+            // Main text body drag Area
             if (lx >= -w / 2 - pad && lx <= w / 2 + pad && ly >= -h / 2 - pad && ly <= h / 2 + pad) {
                 interaction.dragging = true;
                 return;
@@ -476,10 +480,19 @@ function bindUIEvents() {
         }
 
         let hit = false;
+        const ctx = editorState.ctx;
         for (let i = editorState.texts.length - 1; i >= 0; i--) {
             const t = editorState.texts[i];
-            const dist = Math.sqrt((mouseX - t.x) ** 2 + (mouseY - t.y) ** 2);
-            if (dist < t.size * 0.8) {
+            const bounds = getTextBounds(t, ctx);
+            const w = bounds.w;
+            const h = bounds.h;
+
+            const relPos = getRelativePointerPosition(mouseX, mouseY, t);
+            const lx = relPos.x;
+            const ly = relPos.y;
+
+            // Rectangular bounds collision check
+            if (lx >= -w / 2 && lx <= w / 2 && ly >= -h / 2 && ly <= h / 2) {
                 editorState.selectedText = t;
                 interaction.dragging = true;
                 hit = true;
@@ -500,8 +513,15 @@ function bindUIEvents() {
         const rect = canvas.getBoundingClientRect();
         const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
         const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+        // Calculate raw delta
         const dx = mouseX - interaction.startX;
         const dy = mouseY - interaction.startY;
+
+        // Note: Currently fontastic doesn't have a global canvas zoom state implemented for the user
+        // other than bgScale which only applies to the background image. If a global zoom is added later
+        // dx and dy should be divided by the zoom factor here. 
+        // const zoom = editorState.zoom || 1; 
 
         if (interaction.dragging) {
             if (editorState.selectedText) {
@@ -544,20 +564,17 @@ function bindUIEvents() {
         const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
 
         let hit = false;
+        const ctx = editorState.ctx;
         for (let i = editorState.texts.length - 1; i >= 0; i--) {
             const t = editorState.texts[i];
-            const dx = mouseX - t.x;
-            const dy = mouseY - t.y;
-            const angle = -t.rotation * Math.PI / 180;
-            const lx = dx * Math.cos(angle) - dy * Math.sin(angle);
-            const ly = dx * Math.sin(angle) + dy * Math.cos(angle);
-
-            const ctx = editorState.ctx;
-            ctx.font = `${t.weight || '400'} ${t.size}px "${t.font}"`;
-            const metrics = ctx.measureText(t.content);
-            const w = metrics.width;
-            const h = t.size;
+            const bounds = getTextBounds(t, ctx);
+            const w = bounds.w;
+            const h = bounds.h;
             const pad = 10;
+
+            const relPos = getRelativePointerPosition(mouseX, mouseY, t);
+            const lx = relPos.x;
+            const ly = relPos.y;
 
             if (lx >= -w / 2 - pad && lx <= w / 2 + pad && ly >= -h / 2 - pad && ly <= h / 2 + pad) {
                 editorState.selectedText = t;
@@ -818,6 +835,41 @@ function bindUIEvents() {
             }
         });
     }
+
+    document.getElementById('resetBtn')?.addEventListener('click', resetEditor);
+}
+
+/**
+ * Reset Editor to its initial state.
+ * Mirrors exactly what loadInitialState() sets up on first load.
+ */
+async function resetEditor() {
+    const params = new URLSearchParams(window.location.search);
+    const initialFont = params.get('font') || localStorage.getItem('fontastic_font') || 'Roboto';
+    const initialColor = params.get('color') || '#ffffff';
+    const initialText = localStorage.getItem('fontastic_text') || 'Fontastic';
+
+    // 1. Clear all texts and state
+    editorState.texts = [];
+    editorState.selectedText = null;
+    editorState.backgroundImage = null;
+    editorState.backgroundMode = 'transparent';
+    editorState.bgX = 0;
+    editorState.bgY = 0;
+    editorState.bgScale = 1;
+    editorState.bgRotation = 0;
+    editorState.customBgColor = '#ffffff';
+
+    // 2. Create the default text object (same as loadInitialState)
+    const text = createTextObject(initialText, 480, 270, initialFont, 80, initialColor);
+    editorState.texts.push(text);
+    editorState.selectedText = text;
+
+    // 3. Load the font, sync UI, and force-render
+    editorState.fontLoading = true;
+    await applyFont(initialFont);
+    syncUI();
+    renderCanvas();
 }
 
 /**
@@ -1276,4 +1328,74 @@ function hexToRgba(hex, opacity) {
         b = parseInt(hex.substring(5, 7), 16);
     }
     return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+}
+
+/**
+ * Coordinate Geometry Helpers
+ */
+function getRelativePointerPosition(mouseX, mouseY, t, zoom = 1) {
+    // 1. Un-translate (move origin to object's anchor point)
+    let dx = (mouseX - t.x) / zoom;
+    let dy = (mouseY - t.y) / zoom;
+
+    // 2. Un-rotate
+    const angle = -t.rotation * Math.PI / 180;
+    const lx = dx * Math.cos(angle) - dy * Math.sin(angle);
+    const ly = dx * Math.sin(angle) + dy * Math.cos(angle);
+
+    // 3. Un-scale (Fontastic uses font size rather than scaleX/Y for text, but keeping it flexible)
+    const scaleX = t.scaleX || 1;
+    const scaleY = t.scaleY || 1;
+
+    return { x: lx / scaleX, y: ly / scaleY };
+}
+
+function getTextBounds(t, ctx) {
+    if (!t || !ctx) return { w: 0, h: 0 };
+    ctx.save();
+    ctx.font = `${t.weight || '400'} ${t.size}px "${t.font}"`;
+    const lines = t.content.split('\n');
+    const lineHeight = t.lineHeight || 1.2;
+    const spacing = (t.spacing || 0) * (t.size / 100);
+
+    let maxW = 0;
+    lines.forEach(line => {
+        let lw = 0;
+        line.split('').forEach(char => {
+            lw += ctx.measureText(char).width;
+        });
+        lw += (line.length - 1) * spacing;
+        if (lw > maxW) maxW = lw;
+    });
+    ctx.restore();
+
+    return {
+        w: maxW,
+        h: lines.length * t.size * lineHeight
+    };
+}
+
+
+/**
+ * Mutual Accordion System
+ * Ensures only one tool panel is open at a time in the Sidebar.
+ */
+function initAccordions() {
+    const headers = document.querySelectorAll('.control-header');
+    headers.forEach(header => {
+        header.addEventListener('click', () => {
+            const group = header.parentElement;
+            const isActive = group.classList.contains('active');
+
+            // Close all other groups
+            document.querySelectorAll('.control-group').forEach(otherGroup => {
+                otherGroup.classList.remove('active');
+            });
+
+            // If it wasn't active, open it
+            if (!isActive) {
+                group.classList.add('active');
+            }
+        });
+    });
 }

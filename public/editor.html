@@ -89,10 +89,8 @@
                 </div>
             </div>
             <div class="top-bar-actions" style="margin-left: 20px;">
-                <button id="randomFontBtn" class="premium-btn" style="width: auto; padding: 8px 16px; margin: 0;">Random
-                    Font</button>
-                <button id="resetBtn" class="premium-btn"
-                    style="width: auto; padding: 8px 16px; margin: 0; background: transparent; border: 1px solid #7c5cff; color: #fff;">Reset</button>
+                <button id="randomFontBtn" class="premium-btn top-btn">Random Font</button>
+                <button id="resetBtn" class="premium-btn top-btn">Reset</button>
             </div>
         </div>
     </div>
@@ -205,25 +203,21 @@
             </div>
 
             <!-- Background Options -->
-            <div class="field"
-                style="position: relative; flex-direction: row; gap: 10px; margin-bottom: 20px; justify-content: center;">
-                <button id="bgTransparent" class="premium-btn"
-                    style="width: auto; padding: 8px 16px; margin: 0; background: #333; border: 1px solid #555;">Transparent</button>
-                <button id="bgWhite" class="premium-btn"
-                    style="width: auto; padding: 8px 16px; margin: 0; background: #fff; color: #000; border: 1px solid #ccc;">White</button>
-                <button id="bgBlack" class="premium-btn"
-                    style="width: auto; padding: 8px 16px; margin: 0; background: #000; color: #fff; border: 1px solid #333;">Black</button>
-                <button id="bgCustom" class="premium-btn"
-                    style="width: auto; padding: 8px 16px; margin: 0; background: linear-gradient(90deg, #7c5cff, #00d4ff); border: none;">Color</button>
+            <div class="field bg-options-row">
+                <button id="bgTransparent" class="premium-btn bg-btn">Transparent</button>
+                <button id="bgWhite" class="premium-btn bg-btn">White</button>
+                <button id="bgBlack" class="premium-btn bg-btn">Black</button>
+                <button id="bgCustom" class="premium-btn bg-btn">Color</button>
                 <input type="color" id="bgColorPicker"
                     style="position: absolute; width: 0; height: 0; opacity: 0; bottom: 0; right: 20%; pointer-events: none;"
                     value="#ffffff">
             </div>
 
             <!-- Upload Background Area -->
-            <div class="upload-area" style="margin-bottom: 30px;">
-                <label for="bgUpload" class="upload-btn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            <div class="upload-area" style="margin-bottom: 16px; display: flex; justify-content: center;">
+                <label for="bgUpload" class="premium-btn upload-label-btn"
+                    style="width: auto; padding: 8px 20px; margin: 0; display: inline-flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                         <polyline points="17 8 12 3 7 8" />
@@ -234,11 +228,68 @@
                 <input type="file" id="bgUpload" accept="image/png, image/jpeg, image/webp" style="display: none;">
             </div>
 
-            <!-- FIXED BOTTOM PANELS: Text Controls, Outline Controls, Special Effects -->
-            <div class="editor-controls-grid">
-                <!-- Group 1: Text Controls -->
-                <div class="control-group">
+            <!-- Export Buttons Row (below Upload) -->
+            <div class="export-row"
+                style="display: flex; flex-direction: row; gap: 10px; justify-content: center; margin-bottom: 30px;">
+                <button id="downloadPng" class="premium-btn export-btn">
+                    <span class="export-icon">&#11015;</span>
+                    <span class="export-label">PNG</span>
+                </button>
+                <button id="downloadJpg" class="premium-btn export-btn">
+                    <span class="export-icon">&#11015;</span>
+                    <span class="export-label">JPG</span>
+                </button>
+                <button id="downloadSvg" class="premium-btn export-btn">
+                    <span class="export-icon">&#11015;</span>
+                    <span class="export-label">SVG</span>
+                </button>
+            </div>
+
+            <!-- Tools moved to right sidebar -->
+        </main>
+
+        <!-- RIGHT PANEL: Style Tools & Controls -->
+        <aside class="editor-sidebar right-sidebar">
+            <!-- Group 0: Style Tools (Existing) -->
+            <div class="control-group active">
+                <div class="control-header">
+                    <h3>Style Tools</h3>
+                    <svg class="control-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="control-content">
+                    <div class="field">
+                        <div class="field-header">
+                            <label>Warp / Curve</label>
+                            <input type="number" id="warpNum" min="-100" max="100" step="1" value="0"
+                                class="numeric-input">
+                        </div>
+                        <input type="range" id="warpRange" min="-100" max="100" value="0">
+                    </div>
+                    <div class="field">
+                        <div class="field-header">
+                            <label>Rotation</label>
+                            <div style="display: flex; align-items: center; gap: 4px;">
+                                <input type="number" id="rotationNum" min="-360" max="360" step="1" value="0"
+                                    class="numeric-input">
+                                <span style="font-size: 12px; color: var(--text-dim);">°</span>
+                            </div>
+                        </div>
+                        <input type="range" id="sideRotation" min="-360" max="360" value="0">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Group 1: Text Controls -->
+            <div class="control-group">
+                <div class="control-header">
                     <h3>Text Controls</h3>
+                    <svg class="control-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="control-content">
                     <div class="field">
                         <label>Fill Style</label>
                         <select id="fillType" class="modern-select">
@@ -284,10 +335,17 @@
                         <input type="range" id="opacityRange" min="0" max="1" step="0.05" value="1">
                     </div>
                 </div>
+            </div>
 
-                <!-- Group 2: Outline Controls -->
-                <div class="control-group">
+            <!-- Group 2: Outline Controls -->
+            <div class="control-group">
+                <div class="control-header">
                     <h3>Outline Controls</h3>
+                    <svg class="control-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="control-content">
                     <div class="field checkbox-wrapper">
                         <input type="checkbox" id="outlineToggle">
                         <label for="outlineToggle">Enable Outline</label>
@@ -314,10 +372,17 @@
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Group 3: Special Effects -->
-                <div class="control-group">
+            <!-- Group 3: Special Effects -->
+            <div class="control-group">
+                <div class="control-header">
                     <h3>Special Effects</h3>
+                    <svg class="control-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="control-content">
                     <div class="field checkbox-wrapper">
                         <input type="checkbox" id="shadowToggle">
                         <label for="shadowToggle">Enable Shadow</label>
@@ -409,57 +474,9 @@
                             <input type="range" id="neonOpacity" min="0" max="1" step="0.05" value="1">
                         </div>
                     </div>
-
-                </div>
-
-                <!-- Export Area (Bottom Panel) -->
-                <div class="control-group">
-                    <h3>Export</h3>
-                    <div class="field">
-                        <label>Resolution</label>
-                        <select id="resSelect" class="modern-select">
-                            <option value="512">512 px</option>
-                            <option value="1024">1024 px</option>
-                            <option value="1920" selected>1920x1080 (HD)</option>
-                        </select>
-                    </div>
-                    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 15px;">
-                        <div style="display: flex; gap: 8px;">
-                            <button id="downloadPng" class="premium-btn" style="flex: 1; margin-top: 0;">⬇ PNG</button>
-                            <button id="downloadJpg" class="premium-btn"
-                                style="flex: 1; margin-top: 0; background: #444;">⬇ JPG</button>
-                        </div>
-                        <p style="font-size: 10px; color: var(--text-dim); text-align: center; margin: 0;">
-                            * JPG does not support transparent backgrounds
-                        </p>
-                        <button id="downloadSvg" class="premium-btn"
-                            style="width: 100%; margin-top: 4px; background: #7c5cff;">⬇ SVG</button>
-                    </div>
                 </div>
             </div>
-        </main>
 
-        <!-- RIGHT PANEL: Style Tools -->
-        <aside class="editor-sidebar right-sidebar">
-            <h3>Style Tools</h3>
-            <div class="field">
-                <div class="field-header">
-                    <label>Warp / Curve</label>
-                    <input type="number" id="warpNum" min="-100" max="100" step="1" value="0" class="numeric-input">
-                </div>
-                <input type="range" id="warpRange" min="-100" max="100" value="0">
-            </div>
-            <div class="field">
-                <div class="field-header">
-                    <label>Rotation</label>
-                    <div style="display: flex; align-items: center; gap: 4px;">
-                        <input type="number" id="rotationNum" min="-360" max="360" step="1" value="0"
-                            class="numeric-input">
-                        <span style="font-size: 12px; color: var(--text-dim);">°</span>
-                    </div>
-                </div>
-                <input type="range" id="sideRotation" min="-360" max="360" value="0">
-            </div>
         </aside>
     </div>
 
