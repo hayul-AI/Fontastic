@@ -16,8 +16,8 @@ const editorState = {
     bgScale: 1,
     bgRotation: 0,
     fontsLoaded: false,
-    fontLoading: false,
-    initializationLock: true // v7 Double-Lock: Blocks all rendering until first verified font
+    initializationLock: true, // v7 Double-Lock: Blocks all rendering until first verified font
+    undoStack: [] // History for Undo functionality
 };
 
 const interaction = {
@@ -58,6 +58,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     editorState.fontLoading = true;
     editorState.initializationLock = true;
     await initializeEditor();
+    saveState(); // Capture initial state
 });
 
 async function initializeEditor() {
@@ -550,6 +551,9 @@ function bindUIEvents() {
     });
 
     window.addEventListener("mouseup", () => {
+        if (interaction.dragging || interaction.resizing || interaction.rotating) {
+            saveState(); // Save state after interaction ends
+        }
         interaction.dragging = false;
         interaction.resizing = false;
         interaction.rotating = false;
@@ -599,11 +603,17 @@ function bindUIEvents() {
 
         if (!editorState.selectedText) return;
         if (e.key === "Backspace") {
+            saveState();
             editorState.selectedText.content = editorState.selectedText.content.slice(0, -1);
         } else if (e.key === "Enter") {
+            saveState();
             editorState.selectedText.content += "\n";
         } else if (e.key.length === 1) {
+            saveState();
             editorState.selectedText.content += e.key;
+        } else if (e.key.toLowerCase() === 'z' && (e.ctrlKey || e.metaKey)) {
+            e.preventDefault();
+            undo();
         }
         renderCanvas();
         syncUI();
@@ -615,21 +625,30 @@ function bindUIEvents() {
     });
 
     document.getElementById('textColor1')?.addEventListener('input', (e) => {
-        if (editorState.selectedText) { editorState.selectedText.color = e.target.value; renderCanvas(); }
+        if (editorState.selectedText) {
+            // We use 'change' for history to avoid flooding, but 'input' for real-time render.
+            // Let's add a separate 'change' listener for history.
+            editorState.selectedText.color = e.target.value;
+            renderCanvas();
+        }
     });
+    document.getElementById('textColor1')?.addEventListener('change', () => saveState());
 
     // FIX 2 — Canvas Background Buttons
     document.getElementById('bgTransparent')?.addEventListener('click', () => {
         editorState.backgroundImage = null;
         setBackgroundMode('transparent');
+        saveState();
     });
     document.getElementById('bgWhite')?.addEventListener('click', () => {
         editorState.backgroundImage = null;
         setBackgroundMode('white');
+        saveState();
     });
     document.getElementById('bgBlack')?.addEventListener('click', () => {
         editorState.backgroundImage = null;
         setBackgroundMode('black');
+        saveState();
     });
     document.getElementById('bgCustom')?.addEventListener('click', () => {
         document.getElementById('bgColorPicker').click();
@@ -639,29 +658,35 @@ function bindUIEvents() {
         editorState.customBgColor = e.target.value;
         setBackgroundMode('custom');
     });
+    document.getElementById('bgColorPicker')?.addEventListener('change', () => saveState());
 
-    document.getElementById('addTextBtn')?.addEventListener('click', addText);
-    document.getElementById('randomFontBtn')?.addEventListener('click', setRandomFont);
-    document.getElementById('deleteTextBtn')?.addEventListener('click', deleteSelectedText);
-    document.getElementById('bgUpload')?.addEventListener('change', uploadBackground);
+    document.getElementById('addTextBtn')?.addEventListener('click', () => { addText(); saveState(); });
+    document.getElementById('randomFontBtn')?.addEventListener('click', () => { setRandomFont(); saveState(); });
+    document.getElementById('deleteTextBtn')?.addEventListener('click', () => { deleteSelectedText(); saveState(); });
+    document.getElementById('bgUpload')?.addEventListener('change', (e) => { uploadBackground(e); saveState(); });
 
     // FIX 4 — Alignment Logic Correction (Mapping straight)
-    document.getElementById('alignLeft')?.addEventListener('click', () => setAlignment('left'));
-    document.getElementById('alignCenter')?.addEventListener('click', () => setAlignment('center'));
-    document.getElementById('alignRight')?.addEventListener('click', () => setAlignment('right'));
+    document.getElementById('alignLeft')?.addEventListener('click', () => { setAlignment('left'); saveState(); });
+    document.getElementById('alignCenter')?.addEventListener('click', () => { setAlignment('center'); saveState(); });
+    document.getElementById('alignRight')?.addEventListener('click', () => { setAlignment('right'); saveState(); });
 
     document.getElementById('fillType')?.addEventListener('change', (e) => {
         if (editorState.selectedText) {
             editorState.selectedText.fillType = e.target.value;
             syncUI();
             renderCanvas();
+            saveState();
         }
     });
     document.getElementById('textColor2')?.addEventListener('input', (e) => { if (editorState.selectedText) { editorState.selectedText.color2 = e.target.value; renderCanvas(); } });
+    document.getElementById('textColor2')?.addEventListener('change', () => saveState());
     document.getElementById('patternSelect')?.addEventListener('change', (e) => {
         if (editorState.selectedText) {
             editorState.selectedText.fillPattern = e.target.value;
-            loadPattern(e.target.value).then(() => renderCanvas());
+            loadPattern(e.target.value).then(() => {
+                renderCanvas();
+                saveState();
+            });
         }
     });
 
@@ -670,28 +695,36 @@ function bindUIEvents() {
             editorState.selectedText.outlineEnabled = e.target.checked;
             syncUI();
             renderCanvas();
+            saveState();
         }
     });
     document.getElementById('outlineColor')?.addEventListener('input', (e) => { if (editorState.selectedText) { editorState.selectedText.outlineColor = e.target.value; renderCanvas(); } });
+    document.getElementById('outlineColor')?.addEventListener('change', () => saveState());
     document.getElementById('outlineColor2')?.addEventListener('input', (e) => { if (editorState.selectedText) { editorState.selectedText.outlineColor2 = e.target.value; renderCanvas(); } });
+    document.getElementById('outlineColor2')?.addEventListener('change', () => saveState());
     document.getElementById('outlineWidth')?.addEventListener('input', (e) => { if (editorState.selectedText) { editorState.selectedText.outlineWidth = parseFloat(e.target.value); renderCanvas(); } });
+    document.getElementById('outlineWidth')?.addEventListener('change', () => saveState());
     document.getElementById('outlineType')?.addEventListener('change', (e) => {
         if (editorState.selectedText) {
             editorState.selectedText.outlineType = e.target.value;
             syncUI();
             renderCanvas();
+            saveState();
         }
     });
 
-    document.getElementById('shadowToggle')?.addEventListener('change', (e) => { if (editorState.selectedText) { editorState.selectedText.shadowEnabled = e.target.checked; syncUI(); renderCanvas(); } });
+    document.getElementById('shadowToggle')?.addEventListener('change', (e) => { if (editorState.selectedText) { editorState.selectedText.shadowEnabled = e.target.checked; syncUI(); renderCanvas(); saveState(); } });
     document.getElementById('shadowColor')?.addEventListener('input', (e) => { if (editorState.selectedText) { editorState.selectedText.shadowColor = e.target.value; renderCanvas(); } });
+    document.getElementById('shadowColor')?.addEventListener('change', () => saveState());
     document.getElementById('shadowBlur')?.addEventListener('input', (e) => { if (editorState.selectedText) { editorState.selectedText.shadowBlur = parseInt(e.target.value); renderCanvas(); } });
+    document.getElementById('shadowBlur')?.addEventListener('change', () => saveState());
 
     document.getElementById('threeDToggle')?.addEventListener('change', (e) => {
         if (editorState.selectedText) {
             editorState.selectedText.enable3D = e.target.checked;
             syncUI();
             renderCanvas();
+            saveState();
         }
     });
 
@@ -708,6 +741,7 @@ function bindUIEvents() {
             }
             syncUI();
             renderCanvas();
+            saveState();
         }
     });
 
@@ -715,6 +749,7 @@ function bindUIEvents() {
         if (editorState.selectedText) {
             editorState.selectedText.glitchEnabled = e.target.checked;
             renderCanvas();
+            saveState();
         }
     });
 
@@ -727,16 +762,23 @@ function bindUIEvents() {
             }
             syncUI();
             renderCanvas();
+            saveState();
         }
     });
     document.getElementById('neonColor')?.addEventListener('input', (e) => { if (editorState.selectedText) { editorState.selectedText.glowColor = e.target.value; renderCanvas(); } });
+    document.getElementById('neonColor')?.addEventListener('change', () => saveState());
     document.getElementById('neonBlur')?.addEventListener('input', (e) => { if (editorState.selectedText) { editorState.selectedText.glowStrength = parseInt(e.target.value); renderCanvas(); } });
+    document.getElementById('neonBlur')?.addEventListener('change', () => saveState());
 
     setupSyncControl('sizeRange', 'sizeNum', 'size');
     setupSyncControl('sideRotation', 'rotationNum', 'rotation');
     setupSyncControl('warpRange', 'warpNum', 'warp');
     setupSyncControl('spacingRange', 'spacingNum', 'spacing');
     setupSyncControl('lineHeightRange', 'lineHeightNum', 'lineHeight');
+
+    // Add 'change' event to all range inputs for saveState
+    const ranges = ['sizeRange', 'sideRotation', 'warpRange', 'spacingRange', 'lineHeightRange', 'opacityRange', 'shadowBlur', 'shadowOffsetX', 'shadowOffsetY', 'shadowOpacity', 'neonBlur', 'neonOpacity', 'threeDDepth', 'bgScaleRange'];
+    ranges.forEach(id => document.getElementById(id)?.addEventListener('change', () => saveState()));
 
     // Custom Opacity Sync (0-1 range vs 0-100 num)
     const oRange = document.getElementById('opacityRange');
@@ -764,8 +806,8 @@ function bindUIEvents() {
     setupSyncControl('neonBlur', 'neonBlurNum', 'glowStrength');
     setupSyncControl('neonOpacity', 'neonOpacityNum', 'glowOpacity');
 
-    document.getElementById('weightSelect')?.addEventListener('change', (e) => { if (editorState.selectedText) { editorState.selectedText.weight = e.target.value; renderCanvas(); } });
-    document.getElementById('fontSelect')?.addEventListener('change', (e) => applyFont(e.target.value));
+    document.getElementById('weightSelect')?.addEventListener('change', (e) => { if (editorState.selectedText) { editorState.selectedText.weight = e.target.value; renderCanvas(); saveState(); } });
+    document.getElementById('fontSelect')?.addEventListener('change', (e) => { applyFont(e.target.value).then(() => saveState()); });
 
     // FIX 1 — X/Y Pos Bidirectional Sync
     document.getElementById('posXNum')?.addEventListener('input', (e) => {
@@ -836,7 +878,61 @@ function bindUIEvents() {
         });
     }
 
+    document.getElementById('undoBtn')?.addEventListener('click', undo);
+
     document.getElementById('resetBtn')?.addEventListener('click', resetEditor);
+}
+
+/**
+ * State Management: Undo / History
+ */
+function saveState() {
+    // Limit stack size
+    if (editorState.undoStack.length > 50) {
+        editorState.undoStack.shift();
+    }
+
+    // Deep copy current state
+    const snapshot = {
+        texts: JSON.parse(JSON.stringify(editorState.texts)),
+        backgroundMode: editorState.backgroundMode,
+        backgroundImage: editorState.backgroundImage, // Note: element reference is okay
+        customBgColor: editorState.customBgColor,
+        bgX: editorState.bgX,
+        bgY: editorState.bgY,
+        bgScale: editorState.bgScale,
+        bgRotation: editorState.bgRotation
+    };
+
+    editorState.undoStack.push(snapshot);
+}
+
+function undo() {
+    if (editorState.undoStack.length <= 1) return; // Keep at least one state
+
+    // Pop the current state (which was just added) and get the previous one
+    editorState.undoStack.pop();
+    const prevState = editorState.undoStack[editorState.undoStack.length - 1];
+
+    // Restore properties
+    editorState.texts = JSON.parse(JSON.stringify(prevState.texts));
+    editorState.backgroundMode = prevState.backgroundMode;
+    editorState.backgroundImage = prevState.backgroundImage;
+    editorState.customBgColor = prevState.customBgColor;
+    editorState.bgX = prevState.bgX;
+    editorState.bgY = prevState.bgY;
+    editorState.bgScale = prevState.bgScale;
+    editorState.bgRotation = prevState.bgRotation;
+
+    // Reset selection if the previously selected text no longer exists or should be re-synced
+    if (editorState.selectedText) {
+        // Find the matching text in the restored array
+        const found = editorState.texts.find(t => t.content === editorState.selectedText.content && t.x === editorState.selectedText.x);
+        editorState.selectedText = found || editorState.texts[0] || null;
+    }
+
+    renderCanvas();
+    syncUI();
 }
 
 /**
