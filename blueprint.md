@@ -8,7 +8,7 @@ Fontastic is a modern, production-ready, SEO-optimized, and AdSense-monetized st
 - **Routing:** Custom Vanilla JS Client-Side Router for dynamic SEO updates.
 - **Rendering:** Canvas API for high-performance text effect generation.
 - **Deployment:** Firebase Hosting (Static).
-- **SEO:** Dynamic meta tags, JSON-LD injection, semantic HTML, sitemap.xml, and robots.txt.
+- **SEO:** Dynamic meta tags, JSON-LD injection, semantic HTML, sitemap.xml, robots.txt, and Naver Search Advisor verification.
 - **Monetization:** Pre-defined AdSense slots with fixed dimensions to prevent Cumulative Layout Shift (CLS).
 
 ## Design System
@@ -22,6 +22,7 @@ Fontastic is a modern, production-ready, SEO-optimized, and AdSense-monetized st
     - **Icon:** Multi-color pencil icon using Blue (`#4285F4`), Red (`#EA4335`), and Yellow (`#FBBC05`).
 
 ### Current Plan & Features
+- **SEO Optimization**: Added Naver Search Advisor verification meta tag to the homepage.
 - **UI Refinement**: Removed the "Edit Selected Text" input field from the Left Sidebar to streamline the interface and reduce redundancy with the top bar input.
 - **UI Reordering**: Moved the "Text Alignment" control directly below the "Add Text" and "Delete" buttons for better workflow.
 - **Multiline Text Support**: Users can now create multiline text logos by pressing Enter in the text input fields.
