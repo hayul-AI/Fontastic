@@ -71,7 +71,7 @@ async function initializeEditor() {
     // Load state -> Bind UI
     await loadInitialState();
     bindUIEvents();
-    initAccordions(); // Logic for Sidebar Collapsibles
+    // initAccordions(); // Logic for Sidebar Collapsibles (Disabled for All-in-one layout)
     populateFontPicker('latin');
 
     // The first applyFont within loadInitialState will eventually clear initializationLock
