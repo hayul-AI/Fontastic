@@ -535,13 +535,7 @@ function bindUIEvents() {
         interaction.rotating = false;
     });
 
-    canvas.addEventListener("wheel", (e) => {
-        if (!editorState.backgroundImage) return;
-        e.preventDefault();
-        editorState.bgScale += e.deltaY * -0.001;
-        editorState.bgScale = Math.max(0.1, Math.min(5, editorState.bgScale));
-        renderCanvas();
-    }, { passive: false });
+    /* Wheel zoom removed as per request - replaced with bottom controls */
 
     // FIX 4 — Double Click Behavior: ONLY edit existing text
     canvas.addEventListener("dblclick", (e) => {
@@ -790,6 +784,40 @@ function bindUIEvents() {
     document.getElementById('downloadPng')?.addEventListener('click', exportPng);
     document.getElementById('downloadJpg')?.addEventListener('click', exportJpg);
     document.getElementById('downloadSvg')?.addEventListener('click', exportSvg);
+
+    // Background Scale Controls
+    const bgScaleRange = document.getElementById('bgScaleRange');
+    const bgScaleDown = document.getElementById('bgScaleDown');
+    const bgScaleUp = document.getElementById('bgScaleUp');
+
+    if (bgScaleRange) {
+        bgScaleRange.addEventListener('input', (e) => {
+            if (editorState.backgroundImage) {
+                editorState.bgScale = parseFloat(e.target.value);
+                renderCanvas();
+            }
+        });
+    }
+
+    if (bgScaleDown) {
+        bgScaleDown.addEventListener('click', () => {
+            if (editorState.backgroundImage) {
+                editorState.bgScale = Math.max(0.1, editorState.bgScale - 0.1);
+                renderCanvas();
+                syncUI();
+            }
+        });
+    }
+
+    if (bgScaleUp) {
+        bgScaleUp.addEventListener('click', () => {
+            if (editorState.backgroundImage) {
+                editorState.bgScale = Math.min(5, editorState.bgScale + 0.1);
+                renderCanvas();
+                syncUI();
+            }
+        });
+    }
 }
 
 /**
@@ -906,6 +934,10 @@ function populateFontPicker(lang, query = "") {
 
 function setBackgroundMode(mode) {
     editorState.backgroundMode = mode;
+    if (mode !== 'none') {
+        editorState.backgroundImage = null;
+    }
+    syncUI();
     renderCanvas();
 }
 
@@ -933,6 +965,7 @@ function uploadBackground(event) {
             editorState.backgroundImage = img;
             editorState.bgScale = Math.max(editorState.canvas.width / img.width, editorState.canvas.height / img.height);
             editorState.backgroundMode = 'none';
+            syncUI();
             renderCanvas();
         };
         img.src = e.target.result;
@@ -1088,6 +1121,16 @@ function syncUI() {
 
     const threeDControls = document.querySelector('.three-d-controls');
     if (threeDControls) threeDControls.style.display = t.enable3D ? 'block' : 'none';
+
+    // Background Scale Control Visibility & Sync
+    const bgScaleControl = document.getElementById('bgScaleControl');
+    if (bgScaleControl) {
+        bgScaleControl.style.display = editorState.backgroundImage ? 'flex' : 'none';
+        const bgScaleRange = document.getElementById('bgScaleRange');
+        if (bgScaleRange) {
+            bgScaleRange.value = editorState.bgScale;
+        }
+    }
 }
 
 function exportJpg() {

@@ -325,6 +325,76 @@ body {
     /* Darker base for checkerboard in dark mode */
 }
 
+.bg-scale-control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    background: #121218;
+    border: 1px solid var(--border);
+    padding: 10px 20px;
+    border-radius: 30px;
+    margin-top: 15px;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.scale-btn {
+    background: #1b1b24;
+    border: 1px solid var(--border);
+    color: #9D4EDD;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 18px;
+    font-weight: 900;
+    font-family: Arial, sans-serif;
+    line-height: 1;
+    text-shadow:
+        -1px -1px 0 #fff,
+        1px -1px 0 #fff,
+        -1px 1px 0 #fff,
+        1px 1px 0 #fff;
+}
+
+.scale-btn:hover {
+    background: #23232c;
+    border-color: #9D4EDD;
+    box-shadow: 0 0 10px rgba(157, 78, 221, 0.4);
+    transform: scale(1.05);
+}
+
+.scale-btn:active {
+    transform: scale(0.95);
+    animation: flicker 0.1s ease;
+}
+
+@keyframes flicker {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.bg-scale-control input[type="range"] {
+    width: 200px;
+    margin: 0;
+}
+
 
 #fontCanvas {
     max-width: 100%;
@@ -563,11 +633,11 @@ input[type="range"]::-webkit-slider-thumb {
     height: 18px;
     width: 18px;
     border-radius: 50%;
-    background: #7c5cff;
+    background: #9D4EDD;
     cursor: pointer;
     -webkit-appearance: none;
     margin-top: -6px;
-    box-shadow: 0 0 10px rgba(124, 92, 255, 0.4);
+    box-shadow: 0 0 10px rgba(157, 78, 221, 0.4);
     transition: var(--transition);
 }
 
